@@ -33,7 +33,11 @@ void main() {
       },
       build: () => PaymentsBloc(repository: repository),
       act: (bloc) => bloc.add(const LoadPayments()),
-      expect: () => [PaymentsLoaded(initialSnapshot), PaymentsLoaded(updatedSnapshot)],
+      expect: () => [
+        const PaymentsLoading(),
+        PaymentsLoaded(initialSnapshot),
+        PaymentsLoaded(updatedSnapshot),
+      ],
     );
 
     blocTest<PaymentsBloc, PaymentsState>(
@@ -43,7 +47,7 @@ void main() {
       },
       build: () => PaymentsBloc(repository: repository),
       act: (bloc) => bloc.add(const LoadPayments()),
-      expect: () => [const PaymentsError()],
+      expect: () => [const PaymentsLoading(), const PaymentsError()],
       errors: () => [isA<FormatException>()],
       verify: (_) => verifyNever(() => repository.watch()),
     );
@@ -55,7 +59,7 @@ void main() {
       },
       build: () => PaymentsBloc(repository: repository),
       act: (bloc) => bloc.add(const LoadPayments()),
-      expect: () => [const PaymentsError()],
+      expect: () => [const PaymentsLoading(), const PaymentsError()],
       errors: () => [isA<StateError>()],
     );
 
@@ -75,6 +79,7 @@ void main() {
         bloc.add(const LoadPayments());
       },
       expect: () => [
+        const PaymentsLoading(),
         const PaymentsError(),
         const PaymentsLoading(),
         PaymentsLoaded(initialSnapshot),

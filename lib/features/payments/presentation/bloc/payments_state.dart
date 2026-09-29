@@ -7,6 +7,10 @@ sealed class PaymentsState extends Equatable {
   List<Object?> get props => [];
 }
 
+class PaymentsInitial extends PaymentsState {
+  const PaymentsInitial();
+}
+
 class PaymentsLoading extends PaymentsState {
   const PaymentsLoading();
 }

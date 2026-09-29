@@ -45,7 +45,9 @@ class PaymentDetailsPage extends StatelessWidget {
         bottom: false,
         child: BlocBuilder<PaymentsBloc, PaymentsState>(
           builder: (context, state) => switch (state) {
-            PaymentsLoading() => const Center(child: CircularProgressIndicator()),
+            PaymentsInitial() || PaymentsLoading() => const Center(
+              child: CircularProgressIndicator(),
+            ),
             PaymentsError() => const PaymentsErrorView(),
             // Only decided payments resolve. A pending request isn't a payment yet, so it shows as
             // unavailable

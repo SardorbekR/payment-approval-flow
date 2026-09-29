@@ -5,7 +5,7 @@ import 'package:payment_approval/l10n/app_localizations.dart';
 /// Browsers can't use Face ID or fingerprint, so the web build shows a labeled dialog instead of
 /// the system prompt. It offers success, cancel and failure, so every path can be tried
 class SimulatedDeviceAuthenticator implements DeviceAuthenticator {
-  SimulatedDeviceAuthenticator({required GlobalKey<NavigatorState> navigatorKey})
+  const SimulatedDeviceAuthenticator({required GlobalKey<NavigatorState> navigatorKey})
     : _navigatorKey = navigatorKey;
 
   final GlobalKey<NavigatorState> _navigatorKey;

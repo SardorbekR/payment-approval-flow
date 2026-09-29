@@ -12,7 +12,7 @@ part 'payments_state.dart';
 class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState> {
   PaymentsBloc({required PaymentsRepository repository})
     : _repository = repository,
-      super(const PaymentsLoading()) {
+      super(const PaymentsInitial()) {
     // A retry cancels the previous subscription instead of adding a second one
     on<LoadPayments>(_loadPayments, transformer: restartable());
   }
@@ -20,7 +20,7 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState> {
   final PaymentsRepository _repository;
 
   Future<void> _loadPayments(_, Emitter<PaymentsState> emit) async {
-    if (state is! PaymentsLoading) emit(const PaymentsLoading());
+    emit(const PaymentsLoading());
 
     try {
       await _repository.load();

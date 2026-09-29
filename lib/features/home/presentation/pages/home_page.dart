@@ -36,7 +36,9 @@ class HomePage extends StatelessWidget {
         bottom: false,
         child: BlocBuilder<PaymentsBloc, PaymentsState>(
           builder: (context, state) => switch (state) {
-            PaymentsLoading() => const Center(child: CircularProgressIndicator()),
+            PaymentsInitial() || PaymentsLoading() => const Center(
+              child: CircularProgressIndicator(),
+            ),
             PaymentsError() => const PaymentsErrorView(),
             PaymentsLoaded(:final snapshot) => _HomeContent(snapshot: snapshot),
           },

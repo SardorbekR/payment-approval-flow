@@ -84,7 +84,9 @@ class _PaymentsPageState extends State<PaymentsPage> {
           listenWhen: _hasNewTopPayment,
           listener: _revealTopPayment,
           builder: (context, state) => switch (state) {
-            PaymentsLoading() => const Center(child: CircularProgressIndicator()),
+            PaymentsInitial() || PaymentsLoading() => const Center(
+              child: CircularProgressIndicator(),
+            ),
             PaymentsError() => const PaymentsErrorView(),
             PaymentsLoaded(:final snapshot) when snapshot.payments.isEmpty => MessageView(
               icon: Icons.receipt_long_outlined,
