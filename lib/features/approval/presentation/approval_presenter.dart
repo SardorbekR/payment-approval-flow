@@ -61,11 +61,24 @@ class ApprovalPresenter {
         return;
       }
 
-      final decided = await _showSheet(request);
-      if (decided == null) {
+      // The presenter owns the bloc, so a decision outlives its sheet.
+      final bloc = ApprovalBloc(
+        request: request,
+        repository: _repository,
+        authenticator: _authenticator,
+      );
+      final Payment? outcome;
+      try {
+        outcome = await _showSheet(request, bloc) ?? await _outcomeOfDecisionInFlight(bloc);
+      } finally {
+        await bloc.close();
+      }
+
+      if (outcome == null) {
         _onClosedWithoutDecision(request);
         return;
       }
+      final decided = outcome;
 
       // The sheet has already closed here, so navigating can't leave it behind.
       switch (decided.status) {
@@ -91,7 +104,7 @@ class ApprovalPresenter {
   }
 
   /// Returns the decided payment, or null when the sheet closed without a decision.
-  Future<Payment?> _showSheet(PaymentRequest request) {
+  Future<Payment?> _showSheet(PaymentRequest request, ApprovalBloc bloc) {
     final context = _navigatorKey.currentContext;
     if (context == null) return Future.value();
 
@@ -104,15 +117,26 @@ class ApprovalPresenter {
       // it closes through its button, a tap outside or back instead.
       enableDrag: false,
       showDragHandle: false,
-      builder: (_) => BlocProvider(
-        create: (_) => ApprovalBloc(
-          request: request,
-          repository: _repository,
-          authenticator: _authenticator,
-        ),
+      builder: (_) => BlocProvider.value(
+        value: bloc,
         child: ApprovalSheet(request: request),
       ),
     );
+  }
+
+  /// The sheet can disappear without an answer while a decision is running,
+  /// for example when the browser's back button removes the page under it.
+  /// The decision carries on, so wait for its outcome instead of reporting the
+  /// request as still pending.
+  Future<Payment?> _outcomeOfDecisionInFlight(ApprovalBloc bloc) async {
+    bool inFlight(ApprovalState state) =>
+        state is ApprovalAuthenticating || state is ApprovalSubmitting;
+
+    final outcome = inFlight(bloc.state)
+        ? await bloc.stream.firstWhere((state) => !inFlight(state))
+        : bloc.state;
+
+    return outcome is ApprovalSucceeded ? outcome.payment : null;
   }
 
   void _onClosedWithoutDecision(PaymentRequest request) {

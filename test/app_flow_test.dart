@@ -13,6 +13,7 @@ import 'package:payment_approval/features/payments/data/data_sources/in_memory_p
 import 'package:payment_approval/features/payments/data/repositories/payments_repository.dart';
 import 'package:payment_approval/features/payments/domain/models/money.dart';
 import 'package:payment_approval/features/payments/domain/models/payment.dart';
+import 'package:payment_approval/features/payments/presentation/pages/payment_details_page.dart';
 import 'package:payment_approval/features/payments/presentation/widgets/payment_tile.dart';
 
 import 'helpers/fakes.dart';
@@ -215,6 +216,31 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(ApprovalSheet), findsNothing);
       expect(selectedTab(tester), 1);
+    });
+  });
+
+  testWidgets('a decision still counts when its sheet disappears mid-flight', (tester) async {
+    await withClock(Clock.fixed(now), () async {
+      await pumpApp(tester);
+      await tester.tap(find.text('Ahmed Khalil'));
+      await tester.pumpAndSettle();
+      final reference = await receiveRequest(tester);
+      authenticator.holdNextPrompt();
+      await tester.tap(find.text('Approve'));
+      await tester.pump();
+
+      // Like the browser's back button: the page under the sheet goes, taking the sheet with it.
+      GoRouter.of(tester.element(find.byType(PaymentDetailsPage))).go('/home');
+      await tester.pumpAndSettle();
+      expect(find.byType(ApprovalSheet), findsNothing);
+
+      authenticator.answerHeldPrompt(DeviceAuthResult.success);
+      await tester.pumpAndSettle();
+
+      expect(selectedTab(tester), 1);
+      expect(visibleTiles(tester).first.payment.reference, reference);
+      expect(find.text('Payment $reference approved'), findsOneWidget);
+      expect(find.textContaining('still waiting'), findsNothing);
     });
   });
 
