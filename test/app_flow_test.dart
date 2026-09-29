@@ -25,7 +25,11 @@ void main() {
   late InMemoryPaymentsApi api;
   late FakeDeviceAuthenticator authenticator;
 
-  Future<void> pumpApp(WidgetTester tester, {Size screen = const Size(390, 844)}) async {
+  Future<void> pumpApp(
+    WidgetTester tester, {
+    Size screen = const Size(390, 844),
+    bool framed = false,
+  }) async {
     tester.view
       ..physicalSize = screen
       ..devicePixelRatio = 1;
@@ -38,6 +42,7 @@ void main() {
         navigatorKey: GlobalKey<NavigatorState>(),
         repository: PaymentsRepository(api: api),
         authenticator: authenticator,
+        showDemoFrame: framed,
       ),
     );
     await tester.pumpAndSettle();
@@ -276,6 +281,24 @@ void main() {
 
       await tester.tap(find.byType(BackButton));
       await tester.pumpAndSettle();
+      expect(tester.getCenter(debugButton()), position);
+    });
+  });
+
+  testWidgets('the debug button keeps its place when the web frame comes and goes', (
+    tester,
+  ) async {
+    await withClock(Clock.fixed(now), () async {
+      await pumpApp(tester, screen: const Size(1440, 900), framed: true);
+      await tester.drag(debugButton(), const Offset(-150, -250));
+      await tester.pumpAndSettle();
+      final position = tester.getCenter(debugButton());
+
+      tester.view.physicalSize = const Size(700, 900);
+      await tester.pumpAndSettle();
+      tester.view.physicalSize = const Size(1440, 900);
+      await tester.pumpAndSettle();
+
       expect(tester.getCenter(debugButton()), position);
     });
   });

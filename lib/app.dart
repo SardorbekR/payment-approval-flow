@@ -34,6 +34,10 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   final _messengerKey = GlobalKey<ScaffoldMessengerState>();
+
+  // Keeps the debug button's state, including its position, when the web
+  // frame appears or disappears around it as the window is resized.
+  final _debugFabKey = GlobalKey();
   late final GoRouter _router = createRouter(navigatorKey: widget.navigatorKey);
   late final _presenter = ApprovalPresenter(
     navigatorKey: widget.navigatorKey,
@@ -75,7 +79,7 @@ class _AppState extends State<App> {
           routerConfig: _router,
           builder: (context, child) => DemoFrame(
             enabled: widget.showDemoFrame,
-            child: DebugFabOverlay(presenter: _presenter, child: child!),
+            child: DebugFabOverlay(key: _debugFabKey, presenter: _presenter, child: child!),
           ),
         ),
       ),

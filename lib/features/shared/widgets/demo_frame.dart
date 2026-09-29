@@ -12,12 +12,20 @@ class DemoFrame extends StatelessWidget {
 
   static const _screen = Size(390, 844);
   static const _bezel = 12.0;
-  static const _minWindowWidth = 760.0;
+  static const _guideWidth = 340.0;
+  static const _gap = 64.0;
+  static const _margin = 32.0;
+
+  /// Smaller windows (tablets, phones in landscape) show the app itself.
+  static const _minWindow = Size(900, 640);
 
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
-    if (!enabled || media.size.width < _minWindowWidth) return child;
+    final window = media.size;
+    if (!enabled || window.width < _minWindow.width || window.height < _minWindow.height) {
+      return child;
+    }
 
     final theme = Theme.of(context);
     final isLight = theme.brightness == Brightness.light;
@@ -26,19 +34,24 @@ class DemoFrame extends StatelessWidget {
       color: isLight ? const Color(0xFFE9EBEF) : const Color(0xFF05080C),
       child: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.all(_margin),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 340),
+                constraints: const BoxConstraints(maxWidth: _guideWidth),
                 child: const _Guide(),
               ),
-              const SizedBox(width: 64),
+              const SizedBox(width: _gap),
               ConstrainedBox(
-                // Scale the phone down on short windows instead of cropping it.
-                constraints: BoxConstraints(maxHeight: media.size.height - 64),
+                // The phone takes whatever room the guide leaves, scaled down
+                // to fit both ways and never scaled up.
+                constraints: BoxConstraints(
+                  maxWidth: window.width - _margin * 2 - _guideWidth - _gap,
+                  maxHeight: window.height - _margin * 2,
+                ),
                 child: FittedBox(
+                  fit: BoxFit.scaleDown,
                   child: _Phone(
                     screen: _screen,
                     bezel: _bezel,
