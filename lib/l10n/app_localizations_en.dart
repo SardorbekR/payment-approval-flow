@@ -210,7 +210,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get approvalErrorSubmitFailed =>
-      'Your decision couldn\'t be sent, so nothing changed. Try again.';
+      'We couldn\'t confirm your decision. Try again; it won\'t be applied twice.';
 
   @override
   String paymentApprovedSnack(String reference) {

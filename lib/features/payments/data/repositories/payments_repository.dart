@@ -59,8 +59,10 @@ class PaymentsRepository {
   /// Submits [decision] and returns the full payment the server sends back.
   ///
   /// The request leaves the pending list and the payment joins the list in one
-  /// snapshot. If the server no longer has the request, it's dropped from the
-  /// pending list too, and the [RequestUnavailableException] is rethrown.
+  /// snapshot. When the submission fails, the outcome is unclear: the server may
+  /// have recorded it before the connection dropped, or the request was decided
+  /// elsewhere. So the repository reloads from the server before rethrowing, and
+  /// every screen shows the real state.
   Future<Payment> decide(PaymentRequest request, PaymentStatus decision) async {
     _requireSnapshot();
     try {
@@ -75,7 +77,10 @@ class PaymentsRepository {
 
       return payment;
     } on RequestUnavailableException {
-      _publish(_requireSnapshot().withoutPendingRequest(request.id));
+      await _catchUpWithServer(orDrop: request.id);
+      rethrow;
+    } on Exception {
+      await _catchUpWithServer();
       rethrow;
     }
   }
@@ -85,6 +90,16 @@ class PaymentsRepository {
       _snapshot?.pendingRequests.any((request) => request.id == requestId) ?? false;
 
   Future<void> dispose() => _changes.close();
+
+  /// Reloads from the server. If the server can't be reached either, at least
+  /// stop listing [orDrop], a request the server said it no longer has.
+  Future<void> _catchUpWithServer({String? orDrop}) async {
+    try {
+      await load();
+    } on Exception {
+      if (orDrop != null) _publish(_requireSnapshot().withoutPendingRequest(orDrop));
+    }
+  }
 
   PaymentsSnapshot _requireSnapshot() =>
       _snapshot ?? (throw StateError('Payments have not been loaded yet'));

@@ -99,7 +99,7 @@
   "approvalErrorAuthLockedOut": "Too many attempts. Unlock your device with its passcode, then try again.",
   "approvalErrorAuthUnavailable": "Set up a screen lock (passcode, fingerprint or Face ID) on this device to approve or reject payments.",
   "approvalErrorRequestUnavailable": "This request is no longer available. It may have been decided elsewhere or expired.",
-  "approvalErrorSubmitFailed": "Your decision couldn't be sent, so nothing changed. Try again.",
+  "approvalErrorSubmitFailed": "We couldn't confirm your decision. Try again; it won't be applied twice.",
 
   "paymentApprovedSnack": "Payment {reference} approved",
   "@paymentApprovedSnack": {

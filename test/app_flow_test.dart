@@ -226,7 +226,7 @@ void main() {
     });
   });
 
-  testWidgets('a request decided elsewhere is reported and dropped', (tester) async {
+  testWidgets('a request decided the other way elsewhere is reported and synced', (tester) async {
     await withClock(Clock.fixed(now), () async {
       await pumpApp(tester);
       final reference = await receiveRequest(tester);
@@ -235,7 +235,7 @@ void main() {
 
       final pendingId = (await tester.runAsync(api.fetchPendingRequests))!.single['id']! as String;
       await tester.runAsync(
-        () => api.submitDecision(requestId: pendingId, decision: 'approved'),
+        () => api.submitDecision(requestId: pendingId, decision: 'rejected'),
       );
       await tester.tap(find.text('Ref $reference'));
       await tester.pumpAndSettle();
@@ -247,6 +247,13 @@ void main() {
       expect(find.byType(ApprovalSheet), findsNothing);
       expect(find.text('Ref $reference'), findsNothing);
       expect(find.textContaining('still waiting'), findsNothing);
+
+      // The app caught up with the server: the rejection made elsewhere is listed.
+      expect(find.text('Excludes 2 rejected payments'), findsOneWidget);
+      await tester.tap(find.text('Payments'));
+      await tester.pumpAndSettle();
+      expect(visibleTiles(tester).first.payment.reference, reference);
+      expect(visibleTiles(tester).first.payment.status, PaymentStatus.rejected);
     });
   });
 

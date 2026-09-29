@@ -118,7 +118,18 @@ void main() {
       );
     });
 
-    test('refuses to decide the same request twice', () async {
+    test('answers a repeated decision with the payment it already recorded', () async {
+      final api = InMemoryPaymentsApi(random: Random(1));
+      final request = paymentRequestFromJson(await api.createDebugRequest());
+      final first = await api.submitDecision(requestId: request.id, decision: 'approved');
+
+      final retry = await api.submitDecision(requestId: request.id, decision: 'approved');
+
+      expect(retry, first);
+      expect((await api.fetchPayments()).where((json) => json['id'] == request.id), hasLength(1));
+    });
+
+    test('refuses the opposite decision on a request that was already decided', () async {
       final api = InMemoryPaymentsApi(random: Random(1));
       final request = paymentRequestFromJson(await api.createDebugRequest());
       await api.submitDecision(requestId: request.id, decision: 'approved');

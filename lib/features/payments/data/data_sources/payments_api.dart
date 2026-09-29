@@ -15,15 +15,16 @@ abstract interface class PaymentsApi {
 
   /// Records [decision] ("approved" or "rejected") and returns the full decided payment.
   ///
-  /// Throws a [RequestUnavailableException] if the request doesn't exist or was
-  /// already decided.
+  /// Repeating the decision already recorded returns the same payment, so a
+  /// retry after a lost response is safe. Throws a [RequestUnavailableException]
+  /// if the request doesn't exist or was decided the other way.
   Future<Map<String, Object?>> submitDecision({
     required String requestId,
     required String decision,
   });
 }
 
-/// The request is unknown or no longer pending (a 404 or 409 from a real server).
+/// The request is unknown or was decided the other way (a 404 or 409 from a real server).
 class RequestUnavailableException implements Exception {
   const RequestUnavailableException(this.requestId);
 

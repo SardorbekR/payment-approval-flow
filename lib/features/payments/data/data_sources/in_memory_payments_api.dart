@@ -69,14 +69,19 @@ class InMemoryPaymentsApi implements PaymentsApi {
   }) async {
     await _respond();
 
-    final record = _records[requestId];
-    if (record == null || record.isDecided) throw RequestUnavailableException(requestId);
-
     final status = switch (decision) {
       'approved' => _RecordStatus.approved,
       'rejected' => _RecordStatus.rejected,
       _ => throw ArgumentError.value(decision, 'decision', 'Expected "approved" or "rejected"'),
     };
+    final record = _records[requestId];
+    if (record == null) throw RequestUnavailableException(requestId);
+    if (record.isDecided) {
+      // A retry of the recorded decision gets the same answer; anything else conflicts.
+      if (record.status == status) return record.toPaymentJson();
+      throw RequestUnavailableException(requestId);
+    }
+
     final decided = record.decide(status, at: clock.now().toUtc());
     _records[requestId] = decided;
 

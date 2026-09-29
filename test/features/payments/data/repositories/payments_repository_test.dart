@@ -22,6 +22,17 @@ void main() {
     ).thenAnswer((_) async => response);
   }
 
+  /// From now on the server reports [requestId] as an approved payment.
+  void whenServerHasDecided(String requestId) {
+    when(() => api.fetchPayments()).thenAnswer(
+      (_) async => [
+        tPaymentJson(),
+        tPaymentJson(id: requestId, decidedAt: '2026-09-29T08:20:00.000Z'),
+      ],
+    );
+    when(() => api.fetchPendingRequests()).thenAnswer((_) async => []);
+  }
+
   /// Collects every snapshot the repository publishes from now on.
   Future<List<PaymentsSnapshot>> recordSnapshots() async {
     final snapshots = <PaymentsSnapshot>[];
@@ -131,7 +142,7 @@ void main() {
       expect(snapshots.last.payments.first, payment);
     });
 
-    test('drops a request the server no longer has and rethrows', () async {
+    test('catches up with the server when the request was decided elsewhere', () async {
       when(
         () => api.submitDecision(
           requestId: any(named: 'requestId'),
@@ -139,6 +150,7 @@ void main() {
         ),
       ).thenThrow(const RequestUnavailableException('pay_7f3a9c01'));
       await repository.load();
+      whenServerHasDecided('pay_7f3a9c01');
       final snapshots = await recordSnapshots();
 
       await expectLater(
@@ -148,7 +160,48 @@ void main() {
       await pumpEventQueue();
 
       expect(snapshots.last.pendingRequests, isEmpty);
-      expect(snapshots.last.payments.map((payment) => payment.id), isNot(contains('pay_7f3a9c01')));
+      expect(snapshots.last.paymentById('pay_7f3a9c01'), isNotNull);
+    });
+
+    test('still stops listing the request when the server cannot be reached', () async {
+      when(
+        () => api.submitDecision(
+          requestId: any(named: 'requestId'),
+          decision: any(named: 'decision'),
+        ),
+      ).thenThrow(const RequestUnavailableException('pay_7f3a9c01'));
+      await repository.load();
+      when(() => api.fetchPayments()).thenThrow(Exception('offline'));
+      final snapshots = await recordSnapshots();
+
+      await expectLater(
+        repository.decide(tRequest(id: 'pay_7f3a9c01'), PaymentStatus.approved),
+        throwsA(isA<RequestUnavailableException>()),
+      );
+      await pumpEventQueue();
+
+      expect(snapshots.last.pendingRequests, isEmpty);
+    });
+
+    test('asks the server for the real state when the outcome is unclear', () async {
+      when(
+        () => api.submitDecision(
+          requestId: any(named: 'requestId'),
+          decision: any(named: 'decision'),
+        ),
+      ).thenThrow(Exception('timed out after the server recorded it'));
+      await repository.load();
+      whenServerHasDecided('pay_7f3a9c01');
+      final snapshots = await recordSnapshots();
+
+      await expectLater(
+        repository.decide(tRequest(id: 'pay_7f3a9c01'), PaymentStatus.approved),
+        throwsException,
+      );
+      await pumpEventQueue();
+
+      expect(snapshots.last.paymentById('pay_7f3a9c01'), isNotNull);
+      expect(snapshots.last.pendingRequests, isEmpty);
     });
 
     test('rejects a response that belongs to another payment', () async {
@@ -162,8 +215,8 @@ void main() {
       );
       await pumpEventQueue();
 
-      expect(snapshots, hasLength(1));
-      expect(snapshots.single.pendingRequests.single.id, 'pay_7f3a9c01');
+      expect(snapshots.last.paymentById('pay_someone_else'), isNull);
+      expect(snapshots.last.pendingRequests.single.id, 'pay_7f3a9c01');
     });
   });
 }

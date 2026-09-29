@@ -425,7 +425,7 @@ abstract class AppLocalizations {
   /// No description provided for @approvalErrorSubmitFailed.
   ///
   /// In en, this message translates to:
-  /// **'Your decision couldn\'t be sent, so nothing changed. Try again.'**
+  /// **'We couldn\'t confirm your decision. Try again; it won\'t be applied twice.'**
   String get approvalErrorSubmitFailed;
 
   /// No description provided for @paymentApprovedSnack.
