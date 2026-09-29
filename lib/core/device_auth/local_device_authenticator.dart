@@ -31,6 +31,9 @@ class LocalDeviceAuthenticator implements DeviceAuthenticator {
         // Device errors, and any code a future plugin version adds.
         _ => DeviceAuthResult.failed,
       };
+    } on Exception {
+      // A platform channel failure, for example. Fail closed.
+      return DeviceAuthResult.failed;
     }
   }
 }

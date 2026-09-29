@@ -49,6 +49,17 @@ void main() {
     );
 
     blocTest<PaymentsBloc, PaymentsState>(
+      'ends in a failure, not an endless spinner, for any error while loading',
+      setUp: () {
+        when(() => repository.load()).thenThrow(StateError('unexpected'));
+      },
+      build: () => PaymentsBloc(repository: repository),
+      act: (bloc) => bloc.add(const PaymentsStarted()),
+      expect: () => [const PaymentsLoadFailure()],
+      errors: () => [isA<StateError>()],
+    );
+
+    blocTest<PaymentsBloc, PaymentsState>(
       'recovers when started again after a failure',
       setUp: () {
         var attempts = 0;

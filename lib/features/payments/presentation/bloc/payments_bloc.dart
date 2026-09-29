@@ -25,7 +25,8 @@ class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState> {
 
     try {
       await _repository.load();
-    } on Exception catch (error, stackTrace) {
+    } catch (error, stackTrace) {
+      // Anything that stops the load must end in a retry screen, not an endless spinner.
       addError(error, stackTrace);
       emit(const PaymentsLoadFailure());
       return;

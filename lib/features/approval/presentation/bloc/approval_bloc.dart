@@ -36,7 +36,18 @@ class ApprovalBloc extends Bloc<ApprovalEvent, ApprovalState> {
     final decision = event.decision;
     emit(ApprovalAuthenticating(decision));
 
-    switch (await _authenticator.authenticate(reason: event.authReason)) {
+    // Whatever goes wrong below, the sheet must never stay stuck in a busy state:
+    // it can't be closed while busy. Errors are still reported through addError.
+    final DeviceAuthResult authResult;
+    try {
+      authResult = await _authenticator.authenticate(reason: event.authReason);
+    } catch (error, stackTrace) {
+      addError(error, stackTrace);
+      emit(ApprovalFailed(decision, ApprovalError.authFailed));
+      return;
+    }
+
+    switch (authResult) {
       case DeviceAuthResult.success:
         break;
       case DeviceAuthResult.cancelled:
@@ -58,7 +69,7 @@ class ApprovalBloc extends Bloc<ApprovalEvent, ApprovalState> {
       emit(ApprovalSucceeded(await _repository.decide(_request, decision)));
     } on RequestUnavailableException {
       emit(ApprovalFailed(decision, ApprovalError.requestUnavailable));
-    } on Exception catch (error, stackTrace) {
+    } catch (error, stackTrace) {
       addError(error, stackTrace);
       emit(ApprovalFailed(decision, ApprovalError.submitFailed));
     }

@@ -111,6 +111,41 @@ void main() {
     }
 
     blocTest<ApprovalBloc, ApprovalState>(
+      'fails closed instead of staying busy when authentication throws',
+      setUp: () {
+        when(
+          () => authenticator.authenticate(reason: any(named: 'reason')),
+        ).thenThrow(StateError('plugin crashed'));
+      },
+      build: buildBloc,
+      act: (bloc) => bloc.add(approve),
+      expect: () => [
+        const ApprovalAuthenticating(PaymentStatus.approved),
+        const ApprovalFailed(PaymentStatus.approved, ApprovalError.authFailed),
+      ],
+      errors: () => [isA<StateError>()],
+      verify: (_) => verifyNever(() => repository.decide(any(), any())),
+    );
+
+    blocTest<ApprovalBloc, ApprovalState>(
+      'recovers from an unexpected error while submitting',
+      setUp: () {
+        authenticateWith(DeviceAuthResult.success);
+        when(
+          () => repository.decide(request, PaymentStatus.approved),
+        ).thenThrow(StateError('unexpected'));
+      },
+      build: buildBloc,
+      act: (bloc) => bloc.add(approve),
+      expect: () => [
+        const ApprovalAuthenticating(PaymentStatus.approved),
+        const ApprovalSubmitting(PaymentStatus.approved),
+        const ApprovalFailed(PaymentStatus.approved, ApprovalError.submitFailed),
+      ],
+      errors: () => [isA<StateError>()],
+    );
+
+    blocTest<ApprovalBloc, ApprovalState>(
       'reports a request the server no longer has',
       setUp: () {
         authenticateWith(DeviceAuthResult.success);

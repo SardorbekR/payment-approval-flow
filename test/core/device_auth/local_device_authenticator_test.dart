@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:mocktail/mocktail.dart';
@@ -72,6 +73,14 @@ void main() {
         expect(await authenticator.authenticate(reason: 'reason'), result);
       });
     }
+
+    test('fails closed when the platform channel itself fails', () async {
+      when(
+        () => localAuth.authenticate(localizedReason: any(named: 'localizedReason')),
+      ).thenThrow(PlatformException(code: 'channel-error'));
+
+      expect(await authenticator.authenticate(reason: 'reason'), DeviceAuthResult.failed);
+    });
 
     test('covers every error code the plugin defines', () {
       expect(expectations.keys, unorderedEquals(LocalAuthExceptionCode.values));
