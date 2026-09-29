@@ -36,3 +36,32 @@ PaymentRequest tRequest({
     requestedAt: requestedAt ?? DateTime.utc(2026, 9, 29, 8),
   );
 }
+
+Map<String, Object?> tPaymentJson({
+  String id = 'pay_5e1d0a42',
+  String status = 'approved',
+  String decidedAt = '2026-09-10T11:32:00.000Z',
+}) {
+  return {
+    'id': id,
+    'reference': 'PAY-88213',
+    'recipient_name': 'Ahmed Khalil',
+    'amount': {'minor_units': 120000, 'currency': 'AED'},
+    'status': status,
+    'decided_at': decidedAt,
+    'note': 'Design retainer',
+  };
+}
+
+Map<String, Object?> tRequestJson({
+  String id = 'pay_7f3a9c01',
+  String requestedAt = '2026-09-29T08:15:00.000Z',
+}) {
+  return {
+    'id': id,
+    'reference': 'PAY-40117',
+    'recipient_masked': 'A•••• K.',
+    'currency': 'AED',
+    'requested_at': requestedAt,
+  };
+}
