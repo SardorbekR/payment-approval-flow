@@ -14,8 +14,8 @@ formatter:
 
 linter:
   rules:
-    # Dart 3.13 primary constructors, private named parameters and `;` class bodies
-    # are only weeks old. The classic syntax stays so the code reads the same to every reviewer.
+    # Keeps the classic syntax. Dart 3.13 primary constructors, private named parameters and
+    # `;` class bodies are only weeks old
     use_primary_constructors: false
     unnecessary_type_name_in_constructor: false
     prefer_initializing_formals: false

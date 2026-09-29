@@ -17,7 +17,7 @@ void main() {
       repository: PaymentsRepository(
         dataSource: InMemoryPaymentsDataSource(latency: const Duration(milliseconds: 400)),
       ),
-      // Browsers have no access to Face ID or fingerprint sensors.
+      // Browsers can't use Face ID or fingerprint
       authenticator: kIsWeb
           ? SimulatedDeviceAuthenticator(navigatorKey: navigatorKey)
           : LocalDeviceAuthenticator(),

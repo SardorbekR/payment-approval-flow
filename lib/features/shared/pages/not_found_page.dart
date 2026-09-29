@@ -4,7 +4,7 @@ import 'package:payment_approval/features/shared/widgets/message_view.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 import 'package:payment_approval/router.dart';
 
-/// Shown for any URL the app doesn't know, which matters on the web.
+/// Shown for unknown URLs on the web
 class NotFoundPage extends StatelessWidget {
   const NotFoundPage({super.key});
 

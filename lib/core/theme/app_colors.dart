@@ -1,7 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
-/// Colors for payment statuses. Each status is always shown with a label and an
-/// icon as well, so color is never the only signal.
+/// Colors for payment statuses. Each status also has a label and an icon, so color is never the
+/// only signal
 @immutable
 class StatusColors extends ThemeExtension<StatusColors> {
   const StatusColors({

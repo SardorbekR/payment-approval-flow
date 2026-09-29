@@ -12,7 +12,7 @@ class MockPaymentsBloc extends MockBloc<PaymentsEvent, PaymentsState> implements
 
 class MockApprovalPresenter extends Mock implements ApprovalPresenter {}
 
-/// Wraps a page the way the app does: theme, localizations and the shared bloc.
+/// Wraps a page like the app does, with the theme, localizations and shared bloc
 Widget testApp({
   required Widget child,
   PaymentsBloc? paymentsBloc,
@@ -38,7 +38,7 @@ Widget testApp({
   return presenter == null ? withBloc : RepositoryProvider.value(value: presenter, child: withBloc);
 }
 
-/// Renders on a phone-sized screen, optionally with the system text size raised.
+/// Uses a phone sized screen, with an optional larger text size
 void usePhoneScreen(WidgetTester tester, {double textScale = 1}) {
   tester.view
     ..physicalSize = const Size(390, 844)
@@ -48,5 +48,5 @@ void usePhoneScreen(WidgetTester tester, {double textScale = 1}) {
   addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 }
 
-/// Amounts are formatted with a non-breaking space after the currency code.
+/// Amounts are formatted with a non-breaking space after the currency code
 String aed(String amount) => 'AED\u00A0$amount';

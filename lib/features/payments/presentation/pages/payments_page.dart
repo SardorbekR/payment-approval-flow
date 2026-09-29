@@ -33,7 +33,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
     super.dispose();
   }
 
-  /// A payment that wasn't in the list before is now on top: the user just decided it.
+  /// A new payment on top means the user just decided it
   bool _hasNewTopPayment(PaymentsState previous, PaymentsState current) {
     if (previous is! PaymentsLoaded || current is! PaymentsLoaded) return false;
 
@@ -42,20 +42,20 @@ class _PaymentsPageState extends State<PaymentsPage> {
     return top != null && previous.snapshot.paymentById(top.id) == null;
   }
 
-  /// The tab keeps its scroll position, so a new payment could land above the
-  /// visible area. Scroll back to the top and highlight it.
+  /// The tab keeps its scroll position, so a new payment could be off screen. Scroll to the top and
+  /// highlight it
   void _revealTopPayment(BuildContext context, PaymentsState state) {
     final top = (state as PaymentsLoaded).snapshot.payments.first;
     setState(() => _highlightedPaymentId = top.id);
-    // Rows scrolled far off screen are rebuilt when they come back, which would
-    // replay the tint. Forget the highlight once it has faded.
+    // Rows rebuilt after scrolling back would replay the tint, so forget the highlight once it
+    // fades
     _highlightTimer?.cancel();
     _highlightTimer = Timer(PaymentTile.highlightDuration, () {
       if (mounted) setState(() => _highlightedPaymentId = null);
     });
 
     if (!_scrollController.hasClients) return;
-    // A tab in the background has its tickers muted, so an animation would stall.
+    // Background tabs have muted tickers, so an animation would stall
     if (TickerMode.getValuesNotifier(context).value.enabled) {
       _scrollController.animateTo(
         0,
@@ -76,7 +76,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
         title: Text(l10n.paymentsTitle),
         titleTextStyle: Theme.of(context).textTheme.headlineSmall,
       ),
-      // Keeps the content clear of a notch in landscape.
+      // Keeps the content clear of a notch in landscape
       body: SafeArea(
         top: false,
         bottom: false,
@@ -103,7 +103,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
   }
 }
 
-/// Payments grouped by the month they were decided in, most recent first.
+/// Payments grouped by the month they were decided in, most recent first
 class _PaymentsList extends StatelessWidget {
   const _PaymentsList({
     required this.payments,
@@ -126,7 +126,7 @@ class _PaymentsList extends StatelessWidget {
 
     return ListView(
       controller: controller,
-      // Leaves room for the debug button in its default spot.
+      // Leaves room for the debug button
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 88),
       children: [
         for (final MapEntry(key: month, value: monthPayments) in months.entries) ...[

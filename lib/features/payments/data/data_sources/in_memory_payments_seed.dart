@@ -29,12 +29,11 @@ const _paymentNotes = [
   'Cloud hosting',
 ];
 
-/// The history the demo starts with.
+/// Payments the demo starts with
 ///
-/// The first three mirror the wireframe. They are spread across the part of the
-/// current month that has already passed, so they stay in "this month" even
-/// minutes after midnight on the 1st and Home never opens on an empty summary.
-/// The ids are fixed so their details links survive a page refresh.
+/// The first three mirror the wireframe. They fall in the part of this month that has already
+/// passed, so Home never opens on an empty summary, even on the 1st. Fixed ids keep details links
+/// working after a page refresh
 List<_PaymentRecord> _seedRecords(DateTime now) {
   final localNow = now.toLocal();
   final monthStart = DateTime(localNow.year, localNow.month);

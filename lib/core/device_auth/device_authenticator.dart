@@ -1,23 +1,23 @@
-/// The outcome of asking the device owner to confirm it's them.
+/// Result of asking the device owner to confirm it's them
 enum DeviceAuthResult {
   success,
 
-  /// The user dismissed the prompt, or the system interrupted it.
+  /// The user dismissed the prompt, or the system interrupted it
   canceled,
 
-  /// The face, fingerprint or passcode didn't match.
+  /// The face, fingerprint or passcode didn't match
   failed,
 
-  /// Too many attempts. The device wants its passcode before trying again.
+  /// Too many attempts. The device asks for its passcode first
   lockedOut,
 
-  /// No passcode, fingerprint or face is set up, so nobody can be verified.
+  /// No passcode, fingerprint or face is set up, so nobody can be verified
   unavailable,
 }
 
-/// Confirms that the person holding the device is its owner.
+/// Confirms that the person holding the device is its owner
 abstract interface class DeviceAuthenticator {
-  /// Shows the platform prompt with [reason]. Never throws: every outcome,
-  /// including platform errors, is reported as a [DeviceAuthResult].
+  /// Shows the system prompt with [reason]. Never throws, errors come back as a [DeviceAuthResult]
+  /// too
   Future<DeviceAuthResult> authenticate({required String reason});
 }

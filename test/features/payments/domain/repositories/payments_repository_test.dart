@@ -22,7 +22,7 @@ void main() {
     ).thenAnswer((_) async => response);
   }
 
-  /// From now on the server reports [requestId] as an approved payment.
+  /// From now on the server reports [requestId] as an approved payment
   void whenServerHasDecided(String requestId) {
     when(() => api.fetchPayments()).thenAnswer(
       (_) async => [
@@ -33,7 +33,7 @@ void main() {
     when(() => api.fetchPendingRequests()).thenAnswer((_) async => []);
   }
 
-  /// Collects every snapshot the repository publishes from now on.
+  /// Collects every snapshot the repository publishes from now on
   Future<List<PaymentsSnapshot>> recordSnapshots() async {
     final snapshots = <PaymentsSnapshot>[];
     final subscription = repository.watch().listen(snapshots.add);

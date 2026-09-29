@@ -111,7 +111,7 @@ void main() {
             ),
           ),
         );
-        // Let the listener run, then the scroll animation start and finish.
+        // Let the listener run, then the scroll animation start and finish
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 16));
         await tester.pump(const Duration(milliseconds: 400));
@@ -120,8 +120,8 @@ void main() {
         expect(position.pixels, 0);
         expect(newTile().highlighted, isTrue);
 
-        // Once the tint has faded the highlight is forgotten, so scrolling the
-        // row away and back doesn't replay it.
+        // Once the tint has faded the highlight is forgotten, so scrolling the row away and back
+        // doesn't replay it
         await tester.pump(PaymentTile.highlightDuration);
         expect(newTile().highlighted, isFalse);
       });

@@ -1,7 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
-/// A centered icon, title and message, with an optional action. Used for empty,
-/// failure and "not available" states.
+/// A centered icon, title and message, with an optional action. Used for empty, failure and "not
+/// available" states
 class MessageView extends StatelessWidget {
   const MessageView({
     required this.icon,

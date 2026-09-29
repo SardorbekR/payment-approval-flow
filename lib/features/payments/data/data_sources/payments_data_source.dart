@@ -1,30 +1,29 @@
-/// The payments backend contract, expressed as the JSON it exchanges.
+/// Payments backend contract, as the JSON it exchanges
 ///
-/// The app ships with `InMemoryPaymentsDataSource`. A production client would implement
-/// the same contract over HTTP, and nothing above the data layer would change.
+/// The app uses `InMemoryPaymentsDataSource`. A real client would implement it over HTTP with no
+/// changes above the data layer
 abstract interface class PaymentsDataSource {
-  /// Decided payments with full details.
+  /// Decided payments with full details
   Future<List<Map<String, Object?>>> fetchPayments();
 
-  /// Requests waiting for a decision. The recipient is masked and the amount is withheld.
+  /// Requests waiting for a decision, with a masked recipient and no amount
   Future<List<Map<String, Object?>>> fetchPendingRequests();
 
-  /// Makes the server issue a new request to this device, as a push would.
-  /// Only the debug button calls it.
+  /// Makes the server send this device a new request, like a push would. Only the debug button uses
+  /// it
   Future<Map<String, Object?>> createDebugRequest();
 
-  /// Records [decision] ("approved" or "rejected") and returns the full decided payment.
+  /// Records [decision] ("approved" or "rejected") and returns the full payment
   ///
-  /// Repeating the decision already recorded returns the same payment, so a
-  /// retry after a lost response is safe. Throws a [RequestUnavailableException]
-  /// if the request doesn't exist or was decided the other way.
+  /// Repeating a recorded decision returns the same payment, so a retry is safe. Throws
+  /// [RequestUnavailableException] if the request is unknown or was decided the other way
   Future<Map<String, Object?>> submitDecision({
     required String requestId,
     required String decision,
   });
 }
 
-/// The request is unknown or was decided the other way (a 404 or 409 from a real server).
+/// The request is unknown or was decided the other way (a 404 or 409 from a real server)
 class RequestUnavailableException implements Exception {
   const RequestUnavailableException(this.requestId);
 

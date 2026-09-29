@@ -16,9 +16,8 @@ enum Routes {
   final String path;
 }
 
-/// Each tab is one page deep. Payment details is a top-level route, so it opens
-/// above the tabs like in the wireframe, and back returns to whichever tab
-/// opened it.
+/// Each tab is one page deep. Payment details opens above the tabs, like in the wireframe, and back
+/// returns to the tab that opened it
 GoRouter createRouter({required GlobalKey<NavigatorState> navigatorKey}) {
   return GoRouter(
     navigatorKey: navigatorKey,
@@ -39,8 +38,8 @@ GoRouter createRouter({required GlobalKey<NavigatorState> navigatorKey}) {
             ],
           ),
           StatefulShellBranch(
-            // Built up front so the list is already listening when a payment is
-            // approved from another tab, and can scroll to it and highlight it.
+            // Built up front, so the list can scroll to and highlight a payment approved from
+            // another tab
             preload: true,
             routes: [
               GoRoute(

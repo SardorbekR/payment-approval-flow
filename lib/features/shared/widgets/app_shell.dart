@@ -9,7 +9,7 @@ class AppShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
   void _goBranch(int index) {
-    // Tapping the tab that is already open returns it to its first page.
+    // Tapping the tab that is already open returns it to its first page
     navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex);
   }
 
@@ -19,8 +19,7 @@ class AppShell extends StatelessWidget {
     final theme = Theme.of(context);
     final inset = theme.snackBarTheme.insetPadding ?? EdgeInsets.zero;
 
-    // Snackbars float above the debug button's resting spot, the way a Scaffold
-    // lifts a snackbar above its own floating action button.
+    // Shows snackbars above the debug button, the way a Scaffold does for its own FAB
     return Theme(
       data: theme.copyWith(
         snackBarTheme: theme.snackBarTheme.copyWith(

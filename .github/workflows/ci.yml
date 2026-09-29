@@ -9,8 +9,8 @@ on:
 permissions:
   contents: read
 
-# A newer push to a pull request replaces the older run. Runs on main and on
-# tags always finish, so a Pages deployment or a release is never cut short.
+# A new push to a pull request cancels the older run. Runs on main and on tags always finish,
+# so a Pages deploy or a release is never cut short
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -32,7 +32,7 @@ jobs:
       - run: flutter pub get
       - run: dart format --output=none --set-exit-if-changed .
       - run: flutter analyze
-      # Golden images are recorded on macOS; font rendering differs on Linux.
+      # Goldens are recorded on macOS, and fonts render differently on Linux
       - run: flutter test --exclude-tags golden
 
   deploy-web:

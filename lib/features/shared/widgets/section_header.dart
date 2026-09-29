@@ -9,12 +9,11 @@ class SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      // Lines the title up with the content of the card below, and the text of a
-      // trailing text button with the end of that content.
+      // Lines the title and a trailing text button up with the content of the card below
       padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 4, 0),
       child: ConstrainedBox(
-        // Material's subheader height, which also fits a text button, so headers
-        // with and without one sit the same distance from their cards.
+        // Material subheader height, which fits a text button, so every header sits the same
+        // distance from its card
         constraints: const BoxConstraints(minHeight: 48),
         child: Row(
           children: [

@@ -30,7 +30,7 @@ class HomePage extends StatelessWidget {
         title: Text(l10n.homeTitle),
         titleTextStyle: Theme.of(context).textTheme.headlineSmall,
       ),
-      // Keeps the content clear of a notch in landscape.
+      // Keeps the content clear of a notch in landscape
       body: SafeArea(
         top: false,
         bottom: false,
@@ -58,19 +58,16 @@ class _HomeContent extends StatelessWidget {
     final recent = payments.take(HomePage.recentLimit);
 
     return ListView(
-      // Leaves room for the debug button in its default spot.
+      // Leaves room for the debug button
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 88),
       children: [
-        // Summary
         MonthlySummaryCard(
           summary: MonthlySummary.of(payments, now: clock.now(), currency: Currency.aed),
         ),
 
-        // Requests closed without a decision
         if (snapshot.pendingRequests.isNotEmpty)
           PendingRequestsSection(requests: snapshot.pendingRequests),
 
-        // Recent payments
         SectionHeader(
           title: l10n.recentTitle,
           trailing: payments.isEmpty

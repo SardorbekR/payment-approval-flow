@@ -44,7 +44,7 @@ void main() {
     });
 
     test('starts just above the navigation bar, where a floating action button goes', () {
-      // The navigation bar (80) and the standard gap (16).
+      // The navigation bar (80) and the standard gap (16)
       expect(startingRect(TextDirection.ltr).bottom, 844 - 34 - 80 - 16);
     });
 

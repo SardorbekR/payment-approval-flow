@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
-/// A rounded surface that groups rows, with hairline dividers between them.
+/// Rounded card that groups rows with dividers between them
 class SectionCard extends StatelessWidget {
   const SectionCard({required this.children, super.key});
 

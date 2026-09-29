@@ -7,12 +7,10 @@ import 'package:payment_approval/features/debug_fab/fab_position.dart';
 import 'package:payment_approval/features/payments/presentation/bloc/payments_bloc.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 
-/// A debug button that simulates an incoming payment request.
+/// Debug button that simulates an incoming payment request
 ///
-/// It sits above the router, so it floats over every screen and keeps its
-/// state through any navigation: once dragged, it stays where it was left for
-/// the rest of the session. It hides while a request is on screen, so it never
-/// covers the approval sheet.
+/// It sits above the router, so it floats over every screen and stays where it was dragged. It
+/// hides while a request is on screen
 class DebugFabOverlay extends StatefulWidget {
   const DebugFabOverlay({required this.presenter, required this.child, super.key});
 
@@ -24,7 +22,7 @@ class DebugFabOverlay extends StatefulWidget {
 }
 
 class _DebugFabOverlayState extends State<DebugFabOverlay> {
-  /// Null until the first drag, so the default spot follows the screen size.
+  /// Null until the first drag, so the default spot follows the screen size
   Offset? _position;
 
   @override
@@ -60,11 +58,9 @@ class _DebugFabOverlayState extends State<DebugFabOverlay> {
                   visible: isLoaded && !isBusy,
                   size: fabSize,
                   onTap: widget.presenter.simulateIncomingRequest,
-                  // Start from where the button is shown, which may have been
-                  // clamped after the screen changed size.
+                  // Start from the shown position, which may have been clamped after a resize
                   onDragStart: () => _position = position,
-                  // Several moves can arrive within one frame, so each one builds
-                  // on the latest position rather than the one from the last build.
+                  // Several moves can arrive in one frame, so each builds on the latest position
                   onDrag: (delta) => setState(() {
                     _position = clampFabPosition(
                       (_position ?? position) + delta,
@@ -111,11 +107,11 @@ class _DebugFab extends StatelessWidget {
           scale: visible ? 1 : 0,
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOutBack,
-          // A plain gesture detector rather than Draggable or a tooltip: this
-          // widget sits above the Navigator, where there is no Overlay.
+          // A plain GestureDetector, because Draggable and Tooltip need an Overlay and this sits
+          // above the Navigator
           child: GestureDetector(
-            // Also delivers the movement made before the drag was recognized,
-            // so the button stays under the finger.
+            // Includes the movement before the drag was recognized, so the button stays under the
+            // finger
             dragStartBehavior: DragStartBehavior.down,
             onPanStart: (_) => onDragStart(),
             onPanUpdate: (details) => onDrag(details.delta),

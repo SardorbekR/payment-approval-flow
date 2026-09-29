@@ -6,8 +6,8 @@ import 'package:payment_approval/features/payments/domain/models/payment.dart';
 import '../../payments_seed.dart';
 
 void main() {
-  // Dates are built in local time and converted to UTC, the same way the app
-  // stores them, so these tests pass in any machine time zone.
+  // Dates are built in local time and stored as UTC like in the app, so these tests pass in any
+  // time zone
   final now = DateTime(2026, 9, 29, 12);
 
   MonthlySummary summarize(List<Payment> payments, {DateTime? at}) =>

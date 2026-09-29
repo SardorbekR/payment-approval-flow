@@ -1,9 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 
-/// On a wide browser window, shows the app at phone size inside a device frame,
-/// next to a short guide, so reviewers see it the way it was designed. On
-/// phones, and in the native apps, it adds nothing.
+/// On a wide browser window, shows the app in a phone frame next to a short guide. On phones and in
+/// the native apps it adds nothing
 class DemoFrame extends StatelessWidget {
   const DemoFrame({required this.enabled, required this.child, super.key});
 
@@ -16,7 +15,7 @@ class DemoFrame extends StatelessWidget {
   static const _gap = 64.0;
   static const _margin = 32.0;
 
-  /// Smaller windows (tablets, phones in landscape) show the app itself.
+  /// Smaller windows, like tablets or phones in landscape, show the app without a frame
   static const _minWindow = Size(900, 640);
 
   @override
@@ -44,8 +43,7 @@ class DemoFrame extends StatelessWidget {
               ),
               const SizedBox(width: _gap),
               ConstrainedBox(
-                // The phone takes whatever room the guide leaves, scaled down
-                // to fit both ways and never scaled up.
+                // The phone takes the room the guide leaves, scaled down to fit but never up
                 constraints: BoxConstraints(
                   maxWidth: window.width - _margin * 2 - _guideWidth - _gap,
                   maxHeight: window.height - _margin * 2,
@@ -55,8 +53,8 @@ class DemoFrame extends StatelessWidget {
                   child: _Phone(
                     screen: _screen,
                     bezel: _bezel,
-                    // The app lays itself out for the phone screen, including the
-                    // status bar and home indicator areas it would have on a device.
+                    // The app lays out for the phone screen, with the status bar and home indicator
+                    // areas of a real device
                     child: MediaQuery(
                       data: media.copyWith(
                         size: _screen,

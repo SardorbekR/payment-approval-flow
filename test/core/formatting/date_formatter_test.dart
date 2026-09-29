@@ -7,10 +7,10 @@ import 'package:payment_approval/l10n/app_localizations.dart';
 void main() {
   final l10n = lookupAppLocalizations(const Locale('en'));
 
-  // Inside the app, the Material localizations delegate loads this data.
+  // Inside the app, the Material localizations delegate loads this data
   setUpAll(() => initializeDateFormatting('en'));
 
-  // Newer CLDR data puts a narrow no-break space before AM and PM.
+  // Newer CLDR data puts a narrow no-break space before AM and PM
   String plain(String text) => text.replaceAll('\u202F', ' ');
 
   String relative(DateTime instant, DateTime now) =>

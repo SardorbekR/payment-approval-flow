@@ -1,9 +1,8 @@
 import 'package:local_auth/local_auth.dart';
 import 'package:payment_approval/core/device_auth/device_authenticator.dart';
 
-/// Face ID, Touch ID or fingerprint through the platform, with the device
-/// passcode as a fallback. It fails closed: anything short of a clear success
-/// is reported as a failure of some kind.
+/// Face ID, Touch ID or fingerprint, with the device passcode as a fallback. Anything short of a
+/// clear success counts as a failure
 class LocalDeviceAuthenticator implements DeviceAuthenticator {
   LocalDeviceAuthenticator({LocalAuthentication? localAuth})
     : _localAuth = localAuth ?? LocalAuthentication();
@@ -15,7 +14,7 @@ class LocalDeviceAuthenticator implements DeviceAuthenticator {
     try {
       final authenticated = await _localAuth.authenticate(localizedReason: reason);
 
-      // iOS reports a failed match as `false` rather than as an error.
+      // iOS reports a failed match as `false` rather than as an error
       return authenticated ? DeviceAuthResult.success : DeviceAuthResult.failed;
     } on LocalAuthException catch (error) {
       return switch (error.code) {
@@ -28,11 +27,11 @@ class LocalDeviceAuthenticator implements DeviceAuthenticator {
         LocalAuthExceptionCode.noBiometricHardware => DeviceAuthResult.unavailable,
         LocalAuthExceptionCode.temporaryLockout ||
         LocalAuthExceptionCode.biometricLockout => DeviceAuthResult.lockedOut,
-        // Device errors, and any code a future plugin version adds.
+        // Device errors, and any code a newer plugin version adds
         _ => DeviceAuthResult.failed,
       };
     } on Exception {
-      // A platform channel failure, for example. Fail closed.
+      // For example a platform channel failure. Fail closed
       return DeviceAuthResult.failed;
     }
   }

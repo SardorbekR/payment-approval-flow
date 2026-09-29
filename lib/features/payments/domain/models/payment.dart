@@ -1,9 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:payment_approval/features/payments/domain/models/money.dart';
 
-/// A payment only exists once it has been decided. A payment that is still
-/// waiting for approval is a `PaymentRequest`, so it can never reach the list,
-/// the summary or the details screen by accident.
+/// A payment exists only once it's decided. One still waiting is a `PaymentRequest`, so it can't
+/// reach the list, the summary or details by accident
 enum PaymentStatus { approved, rejected }
 
 class Payment extends Equatable {
@@ -19,13 +18,13 @@ class Payment extends Equatable {
 
   final String id;
 
-  /// Human-readable reference, for example `PAY-88213`.
+  /// Reference shown to people, for example `PAY-88213`
   final String reference;
   final String recipientName;
   final Money amount;
   final PaymentStatus status;
 
-  /// When the payment was approved or rejected, as a UTC instant.
+  /// When the payment was approved or rejected, as a UTC instant
   final DateTime decidedAt;
   final String? note;
 

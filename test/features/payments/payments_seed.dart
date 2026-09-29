@@ -67,7 +67,7 @@ Map<String, Object?> tRequestJson({
   };
 }
 
-/// Mirrors the wireframe in September 2026, plus one payment from August.
+/// Mirrors the wireframe in September 2026, plus one payment from August
 final tWireframeSnapshot = PaymentsSnapshot(
   payments: [
     tPayment(
@@ -102,5 +102,5 @@ final tWireframeSnapshot = PaymentsSnapshot(
   pendingRequests: const [],
 );
 
-/// "Now" for UI tests, so relative dates and the monthly summary are stable.
+/// "Now" for UI tests, so relative dates and the monthly summary are stable
 final tNow = DateTime(2026, 9, 29, 12);

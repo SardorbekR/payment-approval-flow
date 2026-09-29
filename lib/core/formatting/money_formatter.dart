@@ -1,15 +1,12 @@
 import 'package:intl/intl.dart';
 import 'package:payment_approval/features/payments/domain/models/money.dart';
 
-// A non-breaking space keeps the currency code and the amount on one line.
+// A non-breaking space keeps the currency code and the amount on one line
 const _nbsp = '\u00A0';
 
 final _groupedWholeUnits = NumberFormat.decimalPattern('en');
 
-/// Formats money as "AED 1,200.00".
-///
-/// The whole and fractional parts are split with integer arithmetic, so the
-/// amount never passes through a floating point number and can't be rounded.
+/// Formats money as "AED 1,200.00" with integer math only, so the amount is never rounded
 String formatMoney(Money money) {
   final digits = money.currency.minorUnitDigits;
   var unitsPerWhole = 1;
@@ -27,6 +24,6 @@ String formatMoney(Money money) {
   return '${money.currency.code}$_nbsp$sign$whole$fraction';
 }
 
-/// The amount mask shown before device authentication. It has the same shape
-/// for every amount, so it doesn't reveal how large the payment is.
+/// Amount mask shown before device authentication. It has the same shape for every amount, so it
+/// doesn't reveal the size
 String maskedAmount(Currency currency) => '${currency.code}$_nbsp••,•••.••';

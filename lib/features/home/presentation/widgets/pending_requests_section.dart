@@ -7,8 +7,8 @@ import 'package:payment_approval/features/shared/widgets/section_card.dart';
 import 'package:payment_approval/features/shared/widgets/section_header.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 
-/// Requests the user closed without deciding. Tapping one reopens its approval
-/// sheet, never the details screen: a pending request has no details to show.
+/// Requests the user closed without deciding. Tapping one reopens its sheet, since a pending
+/// request has no details screen
 class PendingRequestsSection extends StatelessWidget {
   const PendingRequestsSection({required this.requests, super.key});
 

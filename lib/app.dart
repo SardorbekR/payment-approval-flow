@@ -25,7 +25,7 @@ class App extends StatefulWidget {
   final PaymentsRepository repository;
   final DeviceAuthenticator authenticator;
 
-  /// Frames the app like a phone on wide browser windows. See [DemoFrame].
+  /// Wraps the app in [DemoFrame] on wide browser windows
   final bool showDemoFrame;
 
   @override
@@ -35,8 +35,7 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   final _messengerKey = GlobalKey<ScaffoldMessengerState>();
 
-  // Keeps the debug button's state, including its position, when the web
-  // frame appears or disappears around it as the window is resized.
+  // Keeps the debug button's position when the web frame comes and goes on resize
   final _debugFabKey = GlobalKey();
   late final GoRouter _router = createRouter(navigatorKey: widget.navigatorKey);
   late final _presenter = ApprovalPresenter(

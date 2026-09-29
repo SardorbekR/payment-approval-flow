@@ -8,8 +8,8 @@ import 'package:payment_approval/features/payments/domain/models/payment_request
 import 'package:payment_approval/features/shared/widgets/labeled_value.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 
-/// Asks the user to approve or reject a request without revealing who it pays
-/// or how much. Pops with the decided [Payment] once the decision is recorded.
+/// Asks the user to approve or reject a request without showing who it pays or how much. Closes
+/// with the decided [Payment]
 class ApprovalSheet extends StatelessWidget {
   const ApprovalSheet({required this.request, super.key});
 
@@ -50,10 +50,9 @@ class ApprovalSheet extends StatelessWidget {
         };
 
         return PopScope(
-          // Closing mid-decision would hide whether the decision went through.
+          // Closing mid-decision would hide whether the decision went through
           canPop: !isBusy,
-          // The sheet's safe area leaves the bottom out; keep the buttons above
-          // the home indicator.
+          // Keeps the buttons above the home indicator, which the sheet's own safe area leaves out
           child: SafeArea(
             top: false,
             child: SingleChildScrollView(
@@ -62,7 +61,6 @@ class ApprovalSheet extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Title and close
                   Row(
                     children: [
                       Expanded(
@@ -80,7 +78,6 @@ class ApprovalSheet extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
 
-                  // Masked request
                   _MaskedRequestCard(request: request),
                   const SizedBox(height: 12),
                   Row(
@@ -99,7 +96,6 @@ class ApprovalSheet extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
 
-                  // Outcome
                   _AnimatedSlot(
                     child: state is ApprovalError
                         ? Padding(
@@ -109,7 +105,6 @@ class ApprovalSheet extends StatelessWidget {
                         : null,
                   ),
 
-                  // Decisions
                   if (isRequestGone)
                     FilledButton(
                       onPressed: () => Navigator.maybePop(context),
@@ -212,7 +207,7 @@ class _RequestRow extends StatelessWidget {
   final String label;
   final String value;
 
-  /// Set for masked values, so screen readers don't read out a row of bullets.
+  /// Set for masked values, so screen readers don't read out a row of bullets
   final String? semanticsLabel;
 
   @override
@@ -294,8 +289,7 @@ class _ErrorMessage extends StatelessWidget {
   }
 }
 
-/// Grows or shrinks smoothly as its content comes and goes, so the sheet
-/// doesn't jump when a message appears.
+/// Animates its height, so the sheet doesn't jump when a message appears
 class _AnimatedSlot extends StatelessWidget {
   const _AnimatedSlot({required this.child});
 
@@ -315,7 +309,7 @@ class _AnimatedSlot extends StatelessWidget {
 class _ButtonSpinner extends StatelessWidget {
   const _ButtonSpinner({required this.label});
 
-  /// Keeps the button named for screen readers while the spinner replaces its text.
+  /// Keeps the button named for screen readers while the spinner replaces its text
   final String label;
 
   @override

@@ -1,9 +1,8 @@
 import 'package:intl/intl.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 
-/// Short form for lists: "Today, 2:32 PM", "Yesterday, 9:10 AM", "Sep 10, 2:32 PM",
-/// or "Sep 10, 2025" for another year. Compares calendar days in local time,
-/// so daylight saving changes can't shift "today".
+/// Short date for lists: "Today, 2:32 PM", "Yesterday, 9:10 AM", "Sep 10, 2:32 PM", or "Sep 10,
+/// 2025" for another year. Compares local calendar days, so daylight saving can't shift "today"
 String formatPaymentDate(
   DateTime instant, {
   required DateTime now,
@@ -24,7 +23,7 @@ String formatPaymentDate(
   return DateFormat.yMMMd(l10n.localeName).format(local);
 }
 
-/// Full form for the details screen: "Sep 10, 2026, 2:32 PM".
+/// Full date for the details screen: "Sep 10, 2026, 2:32 PM"
 String formatFullDate(DateTime instant, {required AppLocalizations l10n}) {
   final local = instant.toLocal();
 
@@ -34,7 +33,7 @@ String formatFullDate(DateTime instant, {required AppLocalizations l10n}) {
   );
 }
 
-/// Month and year for list sections: "September 2026".
+/// Month and year for list sections: "September 2026"
 String formatMonthYear(DateTime instant, {required AppLocalizations l10n}) =>
     DateFormat.yMMMM(l10n.localeName).format(instant.toLocal());
 

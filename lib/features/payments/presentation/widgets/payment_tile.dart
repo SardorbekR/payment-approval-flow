@@ -8,7 +8,6 @@ import 'package:payment_approval/features/shared/widgets/recipient_avatar.dart';
 import 'package:payment_approval/features/shared/widgets/status_badge.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 
-/// One payment in a list: who it's with, when, the amount and its status.
 class PaymentTile extends StatelessWidget {
   const PaymentTile({
     required this.payment,
@@ -17,17 +16,16 @@ class PaymentTile extends StatelessWidget {
     super.key,
   });
 
-  /// How long the tint for a just-decided payment takes to fade.
+  /// How long the highlight takes to fade
   static const highlightDuration = Duration(milliseconds: 2400);
 
-  /// The narrowest row that fits the name next to the amount at the default
-  /// text size. Larger text needs proportionally more room.
+  /// Narrowest row that fits the name beside the amount at normal text size. Larger text needs more
   static const _minRowWidth = 260.0;
 
   final Payment payment;
   final VoidCallback onTap;
 
-  /// Briefly tints the row, for a payment that was just decided.
+  /// Briefly tints the row of a payment that was just decided
   final bool highlighted;
 
   @override
@@ -54,8 +52,7 @@ class PaymentTile extends StatelessWidget {
         padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14),
         child: LayoutBuilder(
           builder: (context, constraints) {
-            // With large text, the amount moves under the name instead of
-            // squeezing it into a sliver.
+            // With large text the amount moves under the name instead of squeezing it
             final stacked =
                 constraints.maxWidth < _minRowWidth * MediaQuery.textScalerOf(context).scale(1);
 
@@ -105,8 +102,8 @@ class PaymentTile extends StatelessWidget {
   }
 }
 
-/// Fades a tint out over a couple of seconds. The animation only runs while the
-/// row is visible, so a payment approved from another tab still gets noticed.
+/// Fades the tint out over a couple of seconds. It only animates while visible, so a payment
+/// approved from another tab still gets noticed
 class _FadingHighlight extends StatelessWidget {
   const _FadingHighlight({required this.child});
 
