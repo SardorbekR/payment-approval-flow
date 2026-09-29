@@ -40,14 +40,12 @@ class AppTheme {
       appBarTheme: AppBarTheme(
         backgroundColor: background,
         foregroundColor: colorScheme.onSurface,
-        surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
         centerTitle: false,
         titleTextStyle: textTheme.titleLarge,
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: colorScheme.surface,
-        surfaceTintColor: Colors.transparent,
         indicatorColor: colorScheme.secondaryContainer,
         labelTextStyle: WidgetStatePropertyAll(textTheme.labelMedium),
       ),
@@ -76,7 +74,6 @@ class AppTheme {
       ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: colorScheme.surface,
-        surfaceTintColor: Colors.transparent,
         showDragHandle: false,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -84,7 +81,6 @@ class AppTheme {
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: colorScheme.surface,
-        surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       ),
       snackBarTheme: SnackBarThemeData(
