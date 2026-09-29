@@ -86,13 +86,19 @@ void main() {
             ),
           ),
         );
-        await tester.pumpAndSettle();
+        // Let the listener run, then the scroll animation start and finish.
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 16));
+        await tester.pump(const Duration(milliseconds: 400));
 
+        PaymentTile newTile() => tester.widget<PaymentTile>(find.byKey(const ValueKey('pay_new')));
         expect(position.pixels, 0);
-        expect(
-          tester.widget<PaymentTile>(find.byKey(const ValueKey('pay_new'))).highlighted,
-          isTrue,
-        );
+        expect(newTile().highlighted, isTrue);
+
+        // Once the tint has faded the highlight is forgotten, so scrolling the
+        // row away and back doesn't replay it.
+        await tester.pump(PaymentTile.highlightDuration);
+        expect(newTile().highlighted, isFalse);
       });
     });
 

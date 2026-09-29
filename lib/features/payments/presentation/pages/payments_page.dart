@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -22,9 +24,11 @@ class PaymentsPage extends StatefulWidget {
 class _PaymentsPageState extends State<PaymentsPage> {
   final _scrollController = ScrollController();
   String? _highlightedPaymentId;
+  Timer? _highlightTimer;
 
   @override
   void dispose() {
+    _highlightTimer?.cancel();
     _scrollController.dispose();
     super.dispose();
   }
@@ -43,6 +47,12 @@ class _PaymentsPageState extends State<PaymentsPage> {
   void _revealTopPayment(BuildContext context, PaymentsState state) {
     final top = (state as PaymentsLoaded).snapshot.payments.first;
     setState(() => _highlightedPaymentId = top.id);
+    // Rows scrolled far off screen are rebuilt when they come back, which would
+    // replay the tint. Forget the highlight once it has faded.
+    _highlightTimer?.cancel();
+    _highlightTimer = Timer(PaymentTile.highlightDuration, () {
+      if (mounted) setState(() => _highlightedPaymentId = null);
+    });
 
     if (!_scrollController.hasClients) return;
     // A tab in the background has its tickers muted, so an animation would stall.

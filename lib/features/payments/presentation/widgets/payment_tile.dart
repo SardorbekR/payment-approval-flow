@@ -17,6 +17,9 @@ class PaymentTile extends StatelessWidget {
     super.key,
   });
 
+  /// How long the tint for a just-decided payment takes to fade.
+  static const highlightDuration = Duration(milliseconds: 2400);
+
   final Payment payment;
   final VoidCallback onTap;
 
@@ -93,7 +96,7 @@ class _FadingHighlight extends StatelessWidget {
 
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.18, end: 0),
-      duration: const Duration(milliseconds: 2400),
+      duration: PaymentTile.highlightDuration,
       curve: Curves.easeInCubic,
       builder: (context, opacity, child) => Ink(
         color: tint.withValues(alpha: opacity),

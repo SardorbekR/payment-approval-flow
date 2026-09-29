@@ -93,7 +93,9 @@ void main() {
 
       final reference = await receiveRequest(tester);
       final shownBeforeApproval = textsIn(tester, find.byType(ApprovalSheet));
-      await decide(tester, 'Approve');
+      await tester.tap(find.text('Approve'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 600));
 
       expect(authenticator.reasons.single, "Confirm it's you to approve payment $reference");
       expect(find.byType(ApprovalSheet), findsNothing);
@@ -103,10 +105,12 @@ void main() {
       expect(top.payment.status, PaymentStatus.approved);
       expect(top.highlighted, isTrue);
       expect(find.text('Payment $reference approved'), findsOneWidget);
+      await tester.pumpAndSettle();
 
-      // The sheet never showed who was paid or how much.
-      expect(shownBeforeApproval, isNot(contains(top.payment.recipientName)));
-      expect(shownBeforeApproval, isNot(contains(formatMoney(top.payment.amount))));
+      // No text in the sheet showed who was paid or how much.
+      bool anyContains(String secret) => shownBeforeApproval.any((text) => text.contains(secret));
+      expect(anyContains(top.payment.recipientName), isFalse);
+      expect(anyContains(formatMoney(top.payment.amount)), isFalse);
 
       await tester.tap(find.text('Home'));
       await tester.pumpAndSettle();
@@ -295,11 +299,11 @@ void main() {
     });
   });
 
-  testWidgets('a cancelled device prompt decides nothing', (tester) async {
+  testWidgets('a canceled device prompt decides nothing', (tester) async {
     await withClock(Clock.fixed(now), () async {
       await pumpApp(tester);
       await receiveRequest(tester);
-      authenticator.answer = DeviceAuthResult.cancelled;
+      authenticator.answer = DeviceAuthResult.canceled;
 
       await decide(tester, 'Approve');
 
