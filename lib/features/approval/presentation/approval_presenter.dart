@@ -49,6 +49,8 @@ class ApprovalPresenter {
   Future<void> _present(Future<PaymentRequest> Function() obtainRequest) async {
     if (_isBusy.value) return;
     _isBusy.value = true;
+    // Whatever the last snackbar said about a request is out of date once a sheet opens.
+    _messengerKey.currentState?.hideCurrentSnackBar();
 
     try {
       final PaymentRequest request;

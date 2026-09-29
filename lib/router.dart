@@ -39,6 +39,9 @@ GoRouter createRouter({required GlobalKey<NavigatorState> navigatorKey}) {
             ],
           ),
           StatefulShellBranch(
+            // Built up front so the list is already listening when a payment is
+            // approved from another tab, and can scroll to it and highlight it.
+            preload: true,
             routes: [
               GoRoute(
                 path: Routes.payments.path,
