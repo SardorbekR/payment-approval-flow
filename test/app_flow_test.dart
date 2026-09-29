@@ -1,12 +1,14 @@
 import 'dart:math';
 
 import 'package:clock/clock.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:payment_approval/app.dart';
 import 'package:payment_approval/core/device_auth/device_authenticator.dart';
 import 'package:payment_approval/core/formatting/money_formatter.dart';
+import 'package:payment_approval/features/approval/presentation/approval_presenter.dart';
 import 'package:payment_approval/features/approval/presentation/widgets/approval_sheet.dart';
 import 'package:payment_approval/features/home/presentation/pages/home_page.dart';
 import 'package:payment_approval/features/payments/data/data_sources/in_memory_payments_api.dart';
@@ -30,12 +32,13 @@ void main() {
     WidgetTester tester, {
     Size screen = const Size(390, 844),
     bool framed = false,
+    InMemoryPaymentsApi? server,
   }) async {
     tester.view
       ..physicalSize = screen
       ..devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    api = InMemoryPaymentsApi(random: Random(7));
+    api = server ?? InMemoryPaymentsApi(random: Random(7));
     authenticator = FakeDeviceAuthenticator();
 
     await tester.pumpWidget(
@@ -244,6 +247,54 @@ void main() {
     });
   });
 
+  testWidgets('a request that fails to arrive is explained and the button comes back', (
+    tester,
+  ) async {
+    await withClock(Clock.fixed(now), () async {
+      await pumpApp(tester, server: _UnreachableForNewRequests());
+
+      await tester.tap(debugButton());
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ApprovalSheet), findsNothing);
+      expect(find.text("Couldn't receive a new request. Try again."), findsOneWidget);
+      expect(debugButton().hitTestable(), findsOneWidget);
+    });
+  });
+
+  testWidgets("the snackbar's Review action reopens a request that was closed", (tester) async {
+    await withClock(Clock.fixed(now), () async {
+      await pumpApp(tester);
+      final reference = await receiveRequest(tester);
+      await tester.tap(find.byTooltip('Decide later'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Review').last);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ApprovalSheet), findsOneWidget);
+      expect(
+        find.descendant(of: find.byType(ApprovalSheet), matching: find.text(reference)),
+        findsOneWidget,
+      );
+    });
+  });
+
+  testWidgets('asking for two requests at once opens a single sheet', (tester) async {
+    await withClock(Clock.fixed(now), () async {
+      await pumpApp(tester);
+      final presenter = tester.element(find.byType(HomePage)).read<ApprovalPresenter>();
+
+      presenter
+        ..simulateIncomingRequest()
+        ..simulateIncomingRequest();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ApprovalSheet), findsOneWidget);
+      expect(await tester.runAsync(api.fetchPendingRequests), hasLength(1));
+    });
+  });
+
   testWidgets('a cancelled device prompt decides nothing', (tester) async {
     await withClock(Clock.fixed(now), () async {
       await pumpApp(tester);
@@ -351,4 +402,11 @@ void main() {
       expect(find.text('Approve'), findsOneWidget);
     });
   });
+}
+
+class _UnreachableForNewRequests extends InMemoryPaymentsApi {
+  _UnreachableForNewRequests() : super(random: Random(7));
+
+  @override
+  Future<Map<String, Object?>> createDebugRequest() async => throw Exception('offline');
 }
