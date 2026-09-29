@@ -54,14 +54,14 @@ class AppTheme {
       dividerTheme: DividerThemeData(color: colorScheme.outlineVariant, thickness: 1, space: 1),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size.fromHeight(52),
+          minimumSize: const Size(64, 52),
           shape: roundedShape,
           textStyle: textTheme.titleSmall,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size.fromHeight(52),
+          minimumSize: const Size(64, 52),
           shape: roundedShape,
           foregroundColor: colorScheme.onSurface,
           side: BorderSide(color: colorScheme.outline),
