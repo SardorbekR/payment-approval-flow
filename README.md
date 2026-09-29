@@ -73,7 +73,7 @@ A small Flutter feature built the way I would ship it inside a production bankin
 - **Seed data always lands in the current month.** It mirrors the wireframe, even minutes after midnight on the 1st.
 - **Debug button behavior:**
   - it follows the finger exactly;
-  - it starts clear of snackbars and system areas;
+  - it starts in the standard spot just above the navigation bar, and snackbars float above it, so neither covers the other;
   - it moves back on screen when the window shrinks;
   - it hides while a sheet is open.
 - **Accessibility and layout:**
@@ -164,7 +164,7 @@ lib/
 
 ## Testing
 
-199 tests: unit, bloc (`bloc_test`), widget, end-to-end flows through the whole app, and golden screenshots.
+200 tests: unit, bloc (`bloc_test`), widget, end-to-end flows through the whole app, and golden screenshots.
 
 ```sh
 flutter test                         # everything (goldens are recorded on macOS)
@@ -181,7 +181,7 @@ flutter test --exclude-tags golden   # what CI runs on Linux
 - a request decided elsewhere;
 - a sheet removed mid-decision;
 - a request that fails to arrive;
-- snackbars that time out, except for screen reader users;
+- snackbars that time out, except for screen reader users, and never overlap the debug button;
 - the debug button keeping its place, including when the web frame comes and goes;
 - large text and landscape.
 

@@ -24,8 +24,6 @@ class DebugFabOverlay extends StatefulWidget {
 }
 
 class _DebugFabOverlayState extends State<DebugFabOverlay> {
-  static const _size = 56.0;
-
   /// Null until the first drag, so the default spot follows the screen size.
   Offset? _position;
 
@@ -42,12 +40,12 @@ class _DebugFabOverlayState extends State<DebugFabOverlay> {
               defaultFabPosition(
                 screen: screen,
                 safeArea: safeArea,
-                size: _size,
+                size: fabSize,
                 textDirection: Directionality.of(context),
               ),
           screen: screen,
           safeArea: safeArea,
-          size: _size,
+          size: fabSize,
         );
 
         return Stack(
@@ -60,7 +58,7 @@ class _DebugFabOverlayState extends State<DebugFabOverlay> {
                 valueListenable: widget.presenter.isBusy,
                 builder: (context, isBusy, _) => _DebugFab(
                   visible: isLoaded && !isBusy,
-                  size: _size,
+                  size: fabSize,
                   onTap: widget.presenter.simulateIncomingRequest,
                   // Start from where the button is shown, which may have been
                   // clamped after the screen changed size.
@@ -72,7 +70,7 @@ class _DebugFabOverlayState extends State<DebugFabOverlay> {
                       (_position ?? position) + delta,
                       screen: screen,
                       safeArea: safeArea,
-                      size: _size,
+                      size: fabSize,
                     );
                   }),
                 ),

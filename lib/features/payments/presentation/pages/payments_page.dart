@@ -126,7 +126,8 @@ class _PaymentsList extends StatelessWidget {
 
     return ListView(
       controller: controller,
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 168),
+      // Leaves room for the debug button in its default spot.
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 88),
       children: [
         for (final MapEntry(key: month, value: monthPayments) in months.entries) ...[
           SectionHeader(title: formatMonthYear(month, l10n: l10n)),

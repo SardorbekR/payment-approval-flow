@@ -43,11 +43,9 @@ void main() {
       expect(startingRect(TextDirection.rtl).left, lessThan(32));
     });
 
-    test('starts above the navigation bar and a two-line snackbar floating over it', () {
-      // Navigation bar (80), snackbar margin (12) and a two-line snackbar (68).
-      const snackBarTop = 844 - 34 - 80 - 12 - 68;
-
-      expect(startingRect(TextDirection.ltr).bottom, lessThanOrEqualTo(snackBarTop));
+    test('starts just above the navigation bar, where a floating action button goes', () {
+      // The navigation bar (80) and the standard gap (16).
+      expect(startingRect(TextDirection.ltr).bottom, 844 - 34 - 80 - 16);
     });
 
     test('starts fully on screen', () {

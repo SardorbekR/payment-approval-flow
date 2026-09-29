@@ -86,7 +86,9 @@ class _PaymentDetails extends StatelessWidget {
     final note = payment.note;
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 248),
+      // Leaves room for the debug button in its default spot, which is measured
+      // from the safe area: there is no navigation bar on this screen.
+      padding: EdgeInsets.fromLTRB(16, 16, 16, 168 + MediaQuery.paddingOf(context).bottom),
       children: [
         // Header
         Center(child: RecipientAvatar(name: payment.recipientName, size: 64)),

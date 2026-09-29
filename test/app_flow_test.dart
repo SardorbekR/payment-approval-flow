@@ -318,6 +318,31 @@ void main() {
     });
   });
 
+  testWidgets('snackbars and the debug button never cover each other', (tester) async {
+    await withClock(Clock.fixed(now), () async {
+      await pumpApp(tester);
+      Rect button() =>
+          tester.getRect(find.ancestor(of: debugButton(), matching: find.byType(Material)).first);
+      Rect snackBar() => tester.getRect(
+        find.descendant(of: find.byType(SnackBar), matching: find.byType(Material)).first,
+      );
+      expect(button().bottom, tester.getRect(find.byType(NavigationBar)).top - 16);
+
+      // On a tab, above the navigation bar
+      await receiveRequest(tester);
+      await tester.tap(find.byTooltip('Decide later'));
+      await tester.pumpAndSettle();
+      expect(snackBar().overlaps(button()), isFalse);
+
+      // On details, which has no navigation bar
+      await tester.tap(find.text('Ahmed Khalil'));
+      await tester.pumpAndSettle();
+      await receiveRequest(tester);
+      await decide(tester, 'Reject');
+      expect(snackBar().overlaps(button()), isFalse);
+    });
+  });
+
   testWidgets('asking for two requests at once opens a single sheet', (tester) async {
     await withClock(Clock.fixed(now), () async {
       await pumpApp(tester);
