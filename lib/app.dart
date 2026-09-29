@@ -33,15 +33,11 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  final _messengerKey = GlobalKey<ScaffoldMessengerState>();
-
   // Keeps the debug button's position when the web frame comes and goes on resize
   final _debugFabKey = GlobalKey();
   late final GoRouter _router = createRouter(navigatorKey: widget.navigatorKey);
   late final _presenter = ApprovalPresenter(
     navigatorKey: widget.navigatorKey,
-    messengerKey: _messengerKey,
-    router: _router,
     repository: widget.repository,
     authenticator: widget.authenticator,
   );
@@ -74,7 +70,6 @@ class _AppState extends State<App> {
             ...GlobalMaterialLocalizations.delegates,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
-          scaffoldMessengerKey: _messengerKey,
           routerConfig: _router,
           builder: (context, child) => DemoFrame(
             enabled: widget.showDemoFrame,

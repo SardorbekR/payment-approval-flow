@@ -18,19 +18,13 @@ import 'package:payment_approval/router.dart';
 class ApprovalPresenter {
   ApprovalPresenter({
     required GlobalKey<NavigatorState> navigatorKey,
-    required GlobalKey<ScaffoldMessengerState> messengerKey,
-    required GoRouter router,
     required PaymentsRepository repository,
     required DeviceAuthenticator authenticator,
   }) : _navigatorKey = navigatorKey,
-       _messengerKey = messengerKey,
-       _router = router,
        _repository = repository,
        _authenticator = authenticator;
 
   final GlobalKey<NavigatorState> _navigatorKey;
-  final GlobalKey<ScaffoldMessengerState> _messengerKey;
-  final GoRouter _router;
   final PaymentsRepository _repository;
   final DeviceAuthenticator _authenticator;
   final _isBusy = ValueNotifier(false);
@@ -45,11 +39,15 @@ class ApprovalPresenter {
 
   void dispose() => _isBusy.dispose();
 
+  // The debug button sits above the Navigator and has no context of its own for sheets,
+  // snackbars and navigation, so the presenter borrows the Navigator's
+  BuildContext? get _context => _navigatorKey.currentContext;
+
   Future<void> _present(Future<PaymentRequest> Function() obtainRequest) async {
     if (_isBusy.value) return;
     _isBusy.value = true;
     // An older snackbar is out of date once a sheet opens
-    _messengerKey.currentState?.hideCurrentSnackBar();
+    if (_context case final context?) ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
     try {
       final PaymentRequest request;
@@ -82,7 +80,7 @@ class ApprovalPresenter {
       // The sheet is already closed here, so navigating can't leave it behind
       switch (decided.status) {
         case PaymentStatus.approved:
-          _router.goNamed(Routes.payments.name);
+          _context?.goNamed(Routes.payments.name);
           _showSnackBar((l10n) => l10n.paymentApprovedSnack(decided.reference));
         case PaymentStatus.rejected:
           // Rejecting keeps the user where they were
@@ -90,7 +88,7 @@ class ApprovalPresenter {
             (l10n) => l10n.paymentRejectedSnack(decided.reference),
             action: (l10n) => SnackBarAction(
               label: l10n.viewAction,
-              onPressed: () => _router.pushNamed(
+              onPressed: () => _context?.pushNamed(
                 Routes.paymentDetails.name,
                 pathParameters: {'id': decided.id},
               ),
@@ -104,7 +102,7 @@ class ApprovalPresenter {
 
   /// Returns the decided payment, or null when the sheet closed without a decision
   Future<Payment?> _showSheet(PaymentRequest request, ApprovalBloc bloc) {
-    final context = _navigatorKey.currentContext;
+    final context = _context;
     if (context == null) return Future.value();
 
     return showModalBottomSheet<Payment>(
@@ -151,12 +149,11 @@ class ApprovalPresenter {
     String Function(AppLocalizations l10n) message, {
     SnackBarAction Function(AppLocalizations l10n)? action,
   }) {
-    final context = _navigatorKey.currentContext;
-    final messenger = _messengerKey.currentState;
-    if (context == null || messenger == null) return;
+    final context = _context;
+    if (context == null) return;
 
     final l10n = AppLocalizations.of(context);
-    messenger
+    ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(

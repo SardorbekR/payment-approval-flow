@@ -9,6 +9,7 @@ import 'package:payment_approval/features/payments/domain/repositories/payments_
 
 void main() {
   LicenseRegistry.addLicense(_fontLicenses);
+  // Lets the approval sheet and the web's simulated prompt open from outside any page
   final navigatorKey = GlobalKey<NavigatorState>();
 
   runApp(
