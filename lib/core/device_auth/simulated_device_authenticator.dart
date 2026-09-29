@@ -36,13 +36,16 @@ class SimulatedAuthDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    const compact = Size(64, 40);
+    const buttonSize = Size(64, 44);
 
     return AlertDialog(
+      // Scrolls instead of overflowing with large text on a small screen.
+      scrollable: true,
       icon: Icon(Icons.fingerprint_rounded, size: 44, color: theme.colorScheme.secondary),
       title: Text(l10n.simulatedAuthTitle),
       content: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(reason, textAlign: TextAlign.center, style: theme.textTheme.bodyMedium),
           const SizedBox(height: 16),
@@ -67,24 +70,32 @@ class SimulatedAuthDialog extends StatelessWidget {
               ),
             ),
           ),
+          const SizedBox(height: 24),
+
+          // Stacked full width, like a system prompt: three choices don't fit
+          // side by side on a phone.
+          FilledButton(
+            onPressed: () => Navigator.pop(context, DeviceAuthResult.success),
+            style: FilledButton.styleFrom(minimumSize: buttonSize),
+            child: Text(l10n.simulatedAuthConfirm),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton(
+            onPressed: () => Navigator.pop(context, DeviceAuthResult.failed),
+            style: OutlinedButton.styleFrom(
+              minimumSize: buttonSize,
+              foregroundColor: theme.colorScheme.error,
+            ),
+            child: Text(l10n.simulatedAuthFail),
+          ),
+          const SizedBox(height: 8),
+          TextButton(
+            onPressed: () => Navigator.pop(context, DeviceAuthResult.canceled),
+            style: TextButton.styleFrom(minimumSize: buttonSize),
+            child: Text(l10n.simulatedAuthCancel),
+          ),
         ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, DeviceAuthResult.failed),
-          style: TextButton.styleFrom(foregroundColor: theme.colorScheme.error),
-          child: Text(l10n.simulatedAuthFail),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(context, DeviceAuthResult.canceled),
-          child: Text(l10n.simulatedAuthCancel),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.pop(context, DeviceAuthResult.success),
-          style: FilledButton.styleFrom(minimumSize: compact),
-          child: Text(l10n.simulatedAuthConfirm),
-        ),
-      ],
     );
   }
 }

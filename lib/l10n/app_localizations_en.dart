@@ -242,7 +242,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get debugFabLabel => 'Simulate an incoming payment request';
 
   @override
-  String get simulatedAuthTitle => 'Confirm it\'s you';
+  String get simulatedAuthTitle => 'Device authentication';
 
   @override
   String get simulatedAuthNotice =>

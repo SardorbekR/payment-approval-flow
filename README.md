@@ -164,7 +164,7 @@ lib/
 
 ## Testing
 
-198 tests: unit, bloc (`bloc_test`), widget, end-to-end flows through the whole app, and golden screenshots.
+199 tests: unit, bloc (`bloc_test`), widget, end-to-end flows through the whole app, and golden screenshots.
 
 ```sh
 flutter test                         # everything (goldens are recorded on macOS)

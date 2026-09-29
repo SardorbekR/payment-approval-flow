@@ -473,7 +473,7 @@ abstract class AppLocalizations {
   /// No description provided for @simulatedAuthTitle.
   ///
   /// In en, this message translates to:
-  /// **'Confirm it\'s you'**
+  /// **'Device authentication'**
   String get simulatedAuthTitle;
 
   /// No description provided for @simulatedAuthNotice.

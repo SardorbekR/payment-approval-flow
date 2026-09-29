@@ -132,7 +132,7 @@
 
   "debugFabLabel": "Simulate an incoming payment request",
 
-  "simulatedAuthTitle": "Confirm it's you",
+  "simulatedAuthTitle": "Device authentication",
   "simulatedAuthNotice": "Simulated device authentication. Browsers can't use Face ID or fingerprint, so this dialog stands in for the system prompt. The Android app uses the real one.",
   "simulatedAuthCancel": "Cancel",
   "simulatedAuthFail": "Fail",

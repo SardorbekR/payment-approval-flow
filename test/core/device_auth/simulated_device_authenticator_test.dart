@@ -4,6 +4,8 @@ import 'package:payment_approval/core/device_auth/device_authenticator.dart';
 import 'package:payment_approval/core/device_auth/simulated_device_authenticator.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 
+import '../../helpers/test_app.dart';
+
 void main() {
   late GlobalKey<NavigatorState> navigatorKey;
   late SimulatedDeviceAuthenticator authenticator;
@@ -33,6 +35,24 @@ void main() {
 
       expect(find.text('Confirm payment PAY-88213'), findsOneWidget);
       expect(find.textContaining('Simulated device authentication'), findsOneWidget);
+    });
+
+    testWidgets('stacks its three choices at full width with even gaps on a phone', (
+      tester,
+    ) async {
+      usePhoneScreen(tester);
+      await pumpHost(tester);
+      authenticator.authenticate(reason: 'Confirm payment PAY-88213');
+      await tester.pumpAndSettle();
+
+      final buttons = [
+        for (final label in ['Authenticate', 'Fail', 'Cancel'])
+          tester.getRect(
+            find.ancestor(of: find.text(label), matching: find.bySubtype<ButtonStyleButton>()),
+          ),
+      ];
+      expect({for (final button in buttons) button.width}, hasLength(1));
+      expect(buttons[1].top - buttons[0].bottom, buttons[2].top - buttons[1].bottom);
     });
 
     final answers = {
