@@ -45,101 +45,110 @@ class ApprovalSheet extends StatelessWidget {
         return PopScope(
           // Closing mid-decision would hide whether the decision went through.
           canPop: !isBusy,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                /// Title and close
-                Row(
-                  children: [
-                    Expanded(
-                      child: Semantics(
-                        header: true,
-                        child: Text(l10n.approvalTitle, style: theme.textTheme.titleLarge),
-                      ),
-                    ),
-                    IconButton(
-                      tooltip: l10n.decideLater,
-                      onPressed: isBusy ? null : () => Navigator.maybePop(context),
-                      icon: const Icon(Icons.close_rounded),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-
-                /// Masked request
-                _MaskedRequestCard(request: request),
-                const SizedBox(height: 12),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.lock_outline_rounded,
-                      size: 16,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(l10n.approvalHiddenNote, style: theme.textTheme.bodySmall),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                /// Outcome
-                if (state is ApprovalFailed) ...[
-                  _ErrorMessage(error: state.error),
-                  const SizedBox(height: 16),
-                ],
-
-                /// Decisions
-                if (isRequestGone)
-                  FilledButton(
-                    onPressed: () => Navigator.maybePop(context),
-                    child: Text(l10n.close),
-                  )
-                else
+          // The sheet's safe area leaves the bottom out; keep the buttons above
+          // the home indicator.
+          child: SafeArea(
+            top: false,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  /// Title and close
                   Row(
                     children: [
                       Expanded(
-                        child: OutlinedButton(
-                          onPressed: isBusy ? null : () => _submit(context, PaymentStatus.rejected),
-                          child: pendingDecision == PaymentStatus.rejected
-                              ? const _ButtonSpinner()
-                              : Text(l10n.reject),
+                        child: Semantics(
+                          header: true,
+                          child: Text(l10n.approvalTitle, style: theme.textTheme.titleLarge),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: FilledButton(
-                          onPressed: isBusy ? null : () => _submit(context, PaymentStatus.approved),
-                          child: pendingDecision == PaymentStatus.approved
-                              ? const _ButtonSpinner()
-                              : Text(l10n.approve),
-                        ),
+                      IconButton(
+                        tooltip: l10n.decideLater,
+                        onPressed: isBusy ? null : () => Navigator.maybePop(context),
+                        icon: const Icon(Icons.close_rounded),
                       ),
                     ],
                   ),
-                if (state case ApprovalAuthenticating() || ApprovalSubmitting()) ...[
                   const SizedBox(height: 12),
-                  Semantics(
-                    liveRegion: true,
-                    child: Text(
-                      switch (state) {
-                        ApprovalSubmitting(decision: PaymentStatus.approved) =>
-                          l10n.approvalApproving,
-                        ApprovalSubmitting(decision: PaymentStatus.rejected) =>
-                          l10n.approvalRejecting,
-                        _ => l10n.approvalAuthenticating,
-                      },
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodySmall,
-                    ),
+
+                  /// Masked request
+                  _MaskedRequestCard(request: request),
+                  const SizedBox(height: 12),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.lock_outline_rounded,
+                        size: 16,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(l10n.approvalHiddenNote, style: theme.textTheme.bodySmall),
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 20),
+
+                  /// Outcome
+                  if (state is ApprovalFailed) ...[
+                    _ErrorMessage(error: state.error),
+                    const SizedBox(height: 16),
+                  ],
+
+                  /// Decisions
+                  if (isRequestGone)
+                    FilledButton(
+                      onPressed: () => Navigator.maybePop(context),
+                      child: Text(l10n.close),
+                    )
+                  else
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: isBusy
+                                ? null
+                                : () => _submit(context, PaymentStatus.rejected),
+                            child: pendingDecision == PaymentStatus.rejected
+                                ? const _ButtonSpinner()
+                                : Text(l10n.reject),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: isBusy
+                                ? null
+                                : () => _submit(context, PaymentStatus.approved),
+                            child: pendingDecision == PaymentStatus.approved
+                                ? const _ButtonSpinner()
+                                : Text(l10n.approve),
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (state case ApprovalAuthenticating() || ApprovalSubmitting()) ...[
+                    const SizedBox(height: 12),
+                    Semantics(
+                      liveRegion: true,
+                      child: Text(
+                        switch (state) {
+                          ApprovalSubmitting(decision: PaymentStatus.approved) =>
+                            l10n.approvalApproving,
+                          ApprovalSubmitting(decision: PaymentStatus.rejected) =>
+                            l10n.approvalRejecting,
+                          _ => l10n.approvalAuthenticating,
+                        },
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         );

@@ -54,7 +54,7 @@ class _HomeContent extends StatelessWidget {
 
     return ListView(
       // Leaves room for the debug button in its default spot.
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 112),
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 168),
       children: [
         /// Summary
         MonthlySummaryCard(

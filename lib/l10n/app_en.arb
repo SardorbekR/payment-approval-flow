@@ -37,10 +37,8 @@
 
   "statusApproved": "Approved",
   "statusRejected": "Rejected",
-  "statusPending": "Pending",
 
   "paymentDetailsTitle": "Payment details",
-  "detailsStatus": "Status",
   "detailsDate": "Date",
   "detailsReference": "Reference",
   "detailsNote": "Note",

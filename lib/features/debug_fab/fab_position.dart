@@ -2,7 +2,8 @@ import 'dart:math';
 
 import 'package:material_ui/material_ui.dart';
 
-/// Where the button starts: bottom end corner, above the bottom navigation bar.
+/// Where the button starts: the bottom end corner, above the navigation bar
+/// and the snackbars that float over it, so it never covers their actions.
 Offset defaultFabPosition({
   required Size screen,
   required EdgeInsets safeArea,
@@ -10,7 +11,7 @@ Offset defaultFabPosition({
 }) {
   return Offset(
     screen.width - safeArea.right - size - 16,
-    screen.height - safeArea.bottom - size - 96,
+    screen.height - safeArea.bottom - size - 176,
   );
 }
 

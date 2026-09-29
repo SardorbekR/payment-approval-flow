@@ -111,7 +111,7 @@ class _PaymentsList extends StatelessWidget {
 
     return ListView(
       controller: controller,
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 112),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 168),
       children: [
         for (final MapEntry(key: month, value: monthPayments) in months.entries) ...[
           SectionHeader(title: formatMonthYear(month, l10n: l10n)),

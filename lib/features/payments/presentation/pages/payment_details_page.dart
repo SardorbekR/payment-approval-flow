@@ -80,7 +80,7 @@ class _PaymentDetails extends StatelessWidget {
     final note = payment.note;
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 112),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 248),
       children: [
         /// Header
         Center(child: RecipientAvatar(name: payment.recipientName, size: 64)),

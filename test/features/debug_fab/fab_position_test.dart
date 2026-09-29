@@ -29,10 +29,10 @@ void main() {
   });
 
   group('defaultFabPosition', () {
-    test('starts in the bottom end corner, above the navigation bar', () {
+    test('starts in the bottom end corner, above the navigation bar and snackbars', () {
       expect(
         defaultFabPosition(screen: screen, safeArea: safeArea, size: size),
-        const Offset(390 - 56 - 16, 844 - 34 - 56 - 96),
+        const Offset(390 - 56 - 16, 844 - 34 - 56 - 176),
       );
     });
   });

@@ -194,23 +194,11 @@ abstract class AppLocalizations {
   /// **'Rejected'**
   String get statusRejected;
 
-  /// No description provided for @statusPending.
-  ///
-  /// In en, this message translates to:
-  /// **'Pending'**
-  String get statusPending;
-
   /// No description provided for @paymentDetailsTitle.
   ///
   /// In en, this message translates to:
   /// **'Payment details'**
   String get paymentDetailsTitle;
-
-  /// No description provided for @detailsStatus.
-  ///
-  /// In en, this message translates to:
-  /// **'Status'**
-  String get detailsStatus;
 
   /// No description provided for @detailsDate.
   ///

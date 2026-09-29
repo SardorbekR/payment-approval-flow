@@ -81,13 +81,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusRejected => 'Rejected';
 
   @override
-  String get statusPending => 'Pending';
-
-  @override
   String get paymentDetailsTitle => 'Payment details';
-
-  @override
-  String get detailsStatus => 'Status';
 
   @override
   String get detailsDate => 'Date';

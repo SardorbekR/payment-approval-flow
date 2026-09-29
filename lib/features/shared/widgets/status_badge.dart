@@ -5,12 +5,9 @@ import 'package:payment_approval/l10n/app_localizations.dart';
 
 /// A small pill with an icon and a label, so the status never relies on color alone.
 class StatusBadge extends StatelessWidget {
-  const StatusBadge({required PaymentStatus this.status, super.key});
+  const StatusBadge({required this.status, super.key});
 
-  const StatusBadge.pending({super.key}) : status = null;
-
-  /// Null means the payment is still waiting for a decision.
-  final PaymentStatus? status;
+  final PaymentStatus status;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +26,6 @@ class StatusBadge extends StatelessWidget {
         colors.rejected,
         colors.rejectedContainer,
       ),
-      null => (l10n.statusPending, Icons.schedule_rounded, colors.pending, colors.pendingContainer),
     };
 
     return DecoratedBox(
