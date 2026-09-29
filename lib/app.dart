@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:payment_approval/core/device_auth/device_authenticator.dart';
 import 'package:payment_approval/core/theme/app_theme.dart';
 import 'package:payment_approval/features/approval/presentation/approval_presenter.dart';
+import 'package:payment_approval/features/debug_fab/debug_fab_overlay.dart';
 import 'package:payment_approval/features/payments/data/repositories/payments_repository.dart';
 import 'package:payment_approval/features/payments/presentation/bloc/payments_bloc.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
@@ -66,6 +67,7 @@ class _AppState extends State<App> {
           supportedLocales: AppLocalizations.supportedLocales,
           scaffoldMessengerKey: _messengerKey,
           routerConfig: _router,
+          builder: (context, child) => DebugFabOverlay(presenter: _presenter, child: child!),
         ),
       ),
     );
