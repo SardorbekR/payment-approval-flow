@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: 3.47.5
+
+jobs:
+  verify:
+    name: Format, analyze and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart format --output=none --set-exit-if-changed .
+      - run: flutter analyze
+      # Golden images are recorded on macOS; font rendering differs on Linux.
+      - run: flutter test --exclude-tags golden
+
+  deploy-web:
+    name: Deploy the web demo to GitHub Pages
+    needs: verify
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: >
+          flutter build web --release
+          --base-href /${{ github.event.repository.name }}/
+          --no-web-resources-cdn
+          --no-wasm-dry-run
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: build/web
+      - id: deployment
+        uses: actions/deploy-pages@v5
+
+  release-apk:
+    name: Attach Android builds to the release
+    needs: verify
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter build apk --release --split-per-abi
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          out=build/app/outputs/flutter-apk
+          mv "$out/app-arm64-v8a-release.apk" "payment-approval-$TAG-arm64.apk"
+          mv "$out/app-armeabi-v7a-release.apk" "payment-approval-$TAG-armv7.apk"
+          gh release create "$TAG" --title "Payment approval $TAG" --verify-tag \
+            --notes "Android builds. Most phones need the arm64 APK; older 32-bit phones need armv7. Signed with a debug key for sideloading, not for the Play Store." \
+            "payment-approval-$TAG-arm64.apk" "payment-approval-$TAG-armv7.apk"
