@@ -1,46 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
+  <!-- Replaced by the value of `flutter build web --base-href`. -->
   <base href="$FLUTTER_BASE_HREF">
-
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
-  <!-- iOS meta tags & icons -->
+  <meta name="description" content="Review incoming payment requests and approve or reject them with device authentication.">
+  <meta name="theme-color" content="#F4F5F7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0D1117" media="(prefers-color-scheme: dark)">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="payment_approval">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Approvals">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>payment_approval</title>
+  <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="manifest.json">
+  <title>Payment Approval</title>
+  <style>
+    html, body { margin: 0; height: 100%; }
+    body { background: #F4F5F7; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    #loading {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 16px; color: #5B6573; font-size: 14px;
+    }
+    #loading .spinner {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 3px solid #D5D9E0; border-top-color: #4F5BD5; animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    /* Wide windows show the app in a phone frame on this background. */
+    @media (min-width: 760px) { body { background: #E9EBEF; } }
+    @media (prefers-color-scheme: dark) {
+      body { background: #0D1117; }
+      #loading { color: #9AA4B2; }
+      #loading .spinner { border-color: #262D37; border-top-color: #AAB2FF; }
+    }
+    @media (prefers-color-scheme: dark) and (min-width: 760px) { body { background: #05080C; } }
+    @media (prefers-reduced-motion: reduce) { #loading .spinner { animation-duration: 3s; } }
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
+  <div id="loading" role="status" aria-live="polite">
+    <div class="spinner"></div>
+    <span>Loading the payment approval demo…</span>
+  </div>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

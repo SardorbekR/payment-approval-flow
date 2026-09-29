@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -7,6 +8,7 @@ import 'package:payment_approval/features/approval/presentation/approval_present
 import 'package:payment_approval/features/debug_fab/debug_fab_overlay.dart';
 import 'package:payment_approval/features/payments/data/repositories/payments_repository.dart';
 import 'package:payment_approval/features/payments/presentation/bloc/payments_bloc.dart';
+import 'package:payment_approval/features/shared/widgets/demo_frame.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 import 'package:payment_approval/router.dart';
 
@@ -15,12 +17,16 @@ class App extends StatefulWidget {
     required this.navigatorKey,
     required this.repository,
     required this.authenticator,
+    this.showDemoFrame = kIsWeb,
     super.key,
   });
 
   final GlobalKey<NavigatorState> navigatorKey;
   final PaymentsRepository repository;
   final DeviceAuthenticator authenticator;
+
+  /// Frames the app like a phone on wide browser windows. See [DemoFrame].
+  final bool showDemoFrame;
 
   @override
   State<App> createState() => _AppState();
@@ -67,7 +73,10 @@ class _AppState extends State<App> {
           supportedLocales: AppLocalizations.supportedLocales,
           scaffoldMessengerKey: _messengerKey,
           routerConfig: _router,
-          builder: (context, child) => DebugFabOverlay(presenter: _presenter, child: child!),
+          builder: (context, child) => DemoFrame(
+            enabled: widget.showDemoFrame,
+            child: DebugFabOverlay(presenter: _presenter, child: child!),
+          ),
         ),
       ),
     );
