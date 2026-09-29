@@ -1,0 +1,141 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Payment Approval",
+
+  "navHome": "Home",
+  "navPayments": "Payments",
+
+  "homeTitle": "Home",
+  "summaryLabel": "Paid this month",
+  "summaryApprovedCount": "{count, plural, =0{No approved payments yet} =1{1 approved payment} other{{count} approved payments}}",
+  "@summaryApprovedCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "summaryRejectedNote": "{count, plural, =1{Excludes 1 rejected payment} other{Excludes {count} rejected payments}}",
+  "@summaryRejectedNote": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "pendingSectionTitle": "Waiting for your approval",
+  "pendingRequestSubtitle": "Ref {reference}",
+  "@pendingRequestSubtitle": {
+    "placeholders": {
+      "reference": {"type": "String"}
+    }
+  },
+  "recentTitle": "Recent",
+  "seeAll": "See all",
+  "reviewAction": "Review",
+  "noPaymentsTitle": "No payments yet",
+  "noPaymentsMessage": "Approved and rejected payments show up here. Tap the + button to simulate an incoming request.",
+
+  "paymentsTitle": "Payments",
+
+  "statusApproved": "Approved",
+  "statusRejected": "Rejected",
+  "statusPending": "Pending",
+
+  "paymentDetailsTitle": "Payment details",
+  "detailsStatus": "Status",
+  "detailsDate": "Date",
+  "detailsReference": "Reference",
+  "detailsNote": "Note",
+  "detailsRejectedHint": "Rejected, so no money moved.",
+  "copyReference": "Copy reference",
+  "referenceCopied": "Reference copied",
+
+  "paymentUnavailableTitle": "Payment unavailable",
+  "paymentUnavailableMessage": "Details are only available for payments you have approved or rejected. This one is still waiting for a decision, or it doesn't exist.",
+  "goToPayments": "Go to Payments",
+  "pageNotFoundTitle": "Page not found",
+  "pageNotFoundMessage": "This link doesn't lead anywhere in the app.",
+  "goToHome": "Go to Home",
+  "loadFailedTitle": "Couldn't load payments",
+  "loadFailedMessage": "Check your connection and try again.",
+  "retry": "Try again",
+
+  "paymentDateToday": "Today, {time}",
+  "@paymentDateToday": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "paymentDateYesterday": "Yesterday, {time}",
+  "@paymentDateYesterday": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+
+  "approvalTitle": "Approve this payment?",
+  "approvalTo": "To",
+  "approvalAmount": "Amount",
+  "approvalReference": "Reference",
+  "approvalHiddenNote": "The full amount and recipient are revealed only after device authentication succeeds.",
+  "approvalRecipientHidden": "Recipient hidden until you authenticate",
+  "approvalAmountHidden": "Amount hidden until you authenticate",
+  "approve": "Approve",
+  "reject": "Reject",
+  "close": "Close",
+  "decideLater": "Decide later",
+  "approvalAuthenticating": "Waiting for device authentication…",
+  "approvalApproving": "Approving…",
+  "approvalRejecting": "Rejecting…",
+  "authReasonApprove": "Confirm it's you to approve payment {reference}",
+  "@authReasonApprove": {
+    "placeholders": {
+      "reference": {"type": "String"}
+    }
+  },
+  "authReasonReject": "Confirm it's you to reject payment {reference}",
+  "@authReasonReject": {
+    "placeholders": {
+      "reference": {"type": "String"}
+    }
+  },
+  "approvalErrorAuthFailed": "We couldn't confirm it's you, so nothing was approved or rejected. Try again.",
+  "approvalErrorAuthLockedOut": "Too many attempts. Unlock your device with its passcode, then try again.",
+  "approvalErrorAuthUnavailable": "Set up a screen lock (passcode, fingerprint or Face ID) on this device to approve or reject payments.",
+  "approvalErrorRequestUnavailable": "This request is no longer available. It may have been decided elsewhere or expired.",
+  "approvalErrorSubmitFailed": "Your decision couldn't be sent, so nothing changed. Try again.",
+
+  "paymentApprovedSnack": "Payment {reference} approved",
+  "@paymentApprovedSnack": {
+    "placeholders": {
+      "reference": {"type": "String"}
+    }
+  },
+  "paymentRejectedSnack": "Payment {reference} rejected",
+  "@paymentRejectedSnack": {
+    "placeholders": {
+      "reference": {"type": "String"}
+    }
+  },
+  "paymentStillPendingSnack": "Payment {reference} is still waiting for your approval",
+  "@paymentStillPendingSnack": {
+    "placeholders": {
+      "reference": {"type": "String"}
+    }
+  },
+  "viewAction": "View",
+  "incomingRequestFailedSnack": "Couldn't receive a new request. Try again.",
+
+  "debugFabLabel": "Simulate an incoming payment request",
+
+  "simulatedAuthTitle": "Confirm it's you",
+  "simulatedAuthNotice": "Simulated device authentication. Browsers can't use Face ID or fingerprint, so this dialog stands in for the system prompt. The Android app uses the real one.",
+  "simulatedAuthCancel": "Cancel",
+  "simulatedAuthFail": "Fail",
+  "simulatedAuthConfirm": "Authenticate",
+
+  "demoTitle": "Payment approval flow",
+  "demoSubtitle": "A working build of the take-home, running entirely in your browser.",
+  "demoStepReceive": "Tap the + button to receive a payment request. You can drag it anywhere.",
+  "demoStepDecide": "Approve or reject it. The browser shows a simulated device authentication prompt.",
+  "demoStepObserve": "Home, Payments and the details screen all update at once.",
+  "demoSessionNote": "Data lives in memory, so refreshing the page starts a fresh session."
+}
