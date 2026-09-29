@@ -7,7 +7,7 @@ import 'package:payment_approval/core/formatting/money_formatter.dart';
 import 'package:payment_approval/core/theme/app_theme.dart';
 import 'package:payment_approval/features/payments/domain/models/payment.dart';
 import 'package:payment_approval/features/payments/presentation/bloc/payments_bloc.dart';
-import 'package:payment_approval/features/payments/presentation/widgets/payments_load_failure_view.dart';
+import 'package:payment_approval/features/payments/presentation/widgets/payments_error_view.dart';
 import 'package:payment_approval/features/shared/widgets/labeled_value.dart';
 import 'package:payment_approval/features/shared/widgets/message_view.dart';
 import 'package:payment_approval/features/shared/widgets/recipient_avatar.dart';
@@ -46,7 +46,7 @@ class PaymentDetailsPage extends StatelessWidget {
         child: BlocBuilder<PaymentsBloc, PaymentsState>(
           builder: (context, state) => switch (state) {
             PaymentsLoading() => const Center(child: CircularProgressIndicator()),
-            PaymentsLoadFailure() => const PaymentsLoadFailureView(),
+            PaymentsError() => const PaymentsErrorView(),
             // Only decided payments resolve. A pending request isn't a payment
             // yet, so its id lands here as unavailable.
             PaymentsLoaded(:final snapshot) => switch (snapshot.paymentById(paymentId)) {

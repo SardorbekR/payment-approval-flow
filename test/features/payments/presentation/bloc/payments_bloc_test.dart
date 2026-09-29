@@ -3,8 +3,8 @@ import 'dart:math';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:payment_approval/features/payments/data/repositories/payments_repository.dart';
 import 'package:payment_approval/features/payments/domain/models/payments_snapshot.dart';
+import 'package:payment_approval/features/payments/domain/repositories/payments_repository.dart';
 import 'package:payment_approval/features/payments/presentation/bloc/payments_bloc.dart';
 
 import '../../payments_seed.dart';
@@ -22,7 +22,7 @@ void main() {
     repository = MockPaymentsRepository();
   });
 
-  group('PaymentsStarted', () {
+  group('LoadPayments', () {
     blocTest<PaymentsBloc, PaymentsState>(
       'loads the payments and follows every later change',
       setUp: () {
@@ -32,7 +32,7 @@ void main() {
         ).thenAnswer((_) => Stream.fromIterable([initialSnapshot, updatedSnapshot]));
       },
       build: () => PaymentsBloc(repository: repository),
-      act: (bloc) => bloc.add(const PaymentsStarted()),
+      act: (bloc) => bloc.add(const LoadPayments()),
       expect: () => [PaymentsLoaded(initialSnapshot), PaymentsLoaded(updatedSnapshot)],
     );
 
@@ -42,8 +42,8 @@ void main() {
         when(() => repository.load()).thenThrow(const FormatException('bad amount'));
       },
       build: () => PaymentsBloc(repository: repository),
-      act: (bloc) => bloc.add(const PaymentsStarted()),
-      expect: () => [const PaymentsLoadFailure()],
+      act: (bloc) => bloc.add(const LoadPayments()),
+      expect: () => [const PaymentsError()],
       errors: () => [isA<FormatException>()],
       verify: (_) => verifyNever(() => repository.watch()),
     );
@@ -54,8 +54,8 @@ void main() {
         when(() => repository.load()).thenThrow(StateError('unexpected'));
       },
       build: () => PaymentsBloc(repository: repository),
-      act: (bloc) => bloc.add(const PaymentsStarted()),
-      expect: () => [const PaymentsLoadFailure()],
+      act: (bloc) => bloc.add(const LoadPayments()),
+      expect: () => [const PaymentsError()],
       errors: () => [isA<StateError>()],
     );
 
@@ -70,12 +70,12 @@ void main() {
       },
       build: () => PaymentsBloc(repository: repository),
       act: (bloc) async {
-        bloc.add(const PaymentsStarted());
+        bloc.add(const LoadPayments());
         await Future<void>.delayed(Duration.zero);
-        bloc.add(const PaymentsStarted());
+        bloc.add(const LoadPayments());
       },
       expect: () => [
-        const PaymentsLoadFailure(),
+        const PaymentsError(),
         const PaymentsLoading(),
         PaymentsLoaded(initialSnapshot),
       ],
@@ -97,9 +97,9 @@ void main() {
       },
       build: () => PaymentsBloc(repository: repository),
       act: (bloc) async {
-        bloc.add(const PaymentsStarted());
+        bloc.add(const LoadPayments());
         await Future<void>.delayed(Duration.zero);
-        bloc.add(const PaymentsStarted());
+        bloc.add(const LoadPayments());
         await Future<void>.delayed(Duration.zero);
       },
       verify: (_) {

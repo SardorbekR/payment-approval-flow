@@ -95,7 +95,7 @@ submitDecision(id, decision)     ◄──       │
 full payment JSON                ──►       Payment { recipient_name, amount, status, decided_at, note }
 ```
 
-`InMemoryPaymentsApi` stands in for the backend and plays by the same rules a real one would. In production I would also bind the decision to a hardware-backed key (Android Keystore or the Secure Enclave) and have the server verify the signature, so the server doesn't have to trust the client's word that authentication happened.
+`InMemoryPaymentsDataSource` stands in for the backend and plays by the same rules a real one would. In production I would also bind the decision to a hardware-backed key (Android Keystore or the Secure Enclave) and have the server verify the signature, so the server doesn't have to trust the client's word that authentication happened.
 
 ## Architecture
 
@@ -111,9 +111,11 @@ flowchart LR
     Decision[ApprovalBloc]
     PB[PaymentsBloc]
   end
-  subgraph Data
+  subgraph Domain
     Repo[PaymentsRepository]
-    Api[PaymentsApi<br/>InMemoryPaymentsApi]
+  end
+  subgraph Data
+    Source[PaymentsDataSource<br/>InMemoryPaymentsDataSource]
   end
   Auth[DeviceAuthenticator<br/>local_auth or simulated]
 
@@ -124,16 +126,17 @@ flowchart LR
   Sheet -- taps --> Decision
   Decision --> Auth
   Decision -- decide --> Repo
-  Repo -- JSON --> Api
+  Repo -- JSON --> Source
   Repo -- PaymentsSnapshot --> PB
   PB --> Home & List & Details
 ```
 
-- **Domain** (`features/payments/domain`) is plain Dart: `Money`, `Payment`, `PaymentRequest`, `PaymentsSnapshot` and `MonthlySummary`. No Flutter, no I/O.
+- **Domain** (`features/payments/domain`):
+  - the models, in plain Dart with no Flutter: `Money`, `Payment`, `PaymentRequest`, `PaymentsSnapshot` and `MonthlySummary`;
+  - `PaymentsRepository`, the single source of truth. It publishes whole snapshots, and new listeners get the latest one.
 - **Data** (`features/payments/data`):
-  - `PaymentsApi` is the backend contract, expressed as JSON.
+  - `PaymentsDataSource` is the backend contract, expressed as JSON.
   - `payment_json.dart` parses strictly and names the field when something is wrong.
-  - `PaymentsRepository` is the single source of truth. It publishes whole snapshots, and new listeners get the latest one.
 - **Presentation**:
   - One `PaymentsBloc` above the router feeds every screen.
   - `ApprovalPresenter` owns the approval sheet and the decision behind it: only one sheet is ever open, and a decision outlives its sheet. It also decides where to go afterwards.

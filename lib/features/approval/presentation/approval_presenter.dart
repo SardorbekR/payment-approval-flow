@@ -5,9 +5,9 @@ import 'package:material_ui/material_ui.dart';
 import 'package:payment_approval/core/device_auth/device_authenticator.dart';
 import 'package:payment_approval/features/approval/presentation/bloc/approval_bloc.dart';
 import 'package:payment_approval/features/approval/presentation/widgets/approval_sheet.dart';
-import 'package:payment_approval/features/payments/data/repositories/payments_repository.dart';
 import 'package:payment_approval/features/payments/domain/models/payment.dart';
 import 'package:payment_approval/features/payments/domain/models/payment_request.dart';
+import 'package:payment_approval/features/payments/domain/repositories/payments_repository.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 import 'package:payment_approval/router.dart';
 
@@ -136,7 +136,7 @@ class ApprovalPresenter {
         ? await bloc.stream.firstWhere((state) => !inFlight(state))
         : bloc.state;
 
-    return outcome is ApprovalSucceeded ? outcome.payment : null;
+    return outcome is ApprovalSuccess ? outcome.payment : null;
   }
 
   void _onClosedWithoutDecision(PaymentRequest request) {

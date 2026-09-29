@@ -1,8 +1,8 @@
 /// The payments backend contract, expressed as the JSON it exchanges.
 ///
-/// The app ships with `InMemoryPaymentsApi`. A production client would implement
+/// The app ships with `InMemoryPaymentsDataSource`. A production client would implement
 /// the same contract over HTTP, and nothing above the data layer would change.
-abstract interface class PaymentsApi {
+abstract interface class PaymentsDataSource {
   /// Decided payments with full details.
   Future<List<Map<String, Object?>>> fetchPayments();
 

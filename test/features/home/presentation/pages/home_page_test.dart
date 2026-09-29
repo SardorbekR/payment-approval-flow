@@ -149,11 +149,11 @@ void main() {
     });
 
     testWidgets('retries when loading failed', (tester) async {
-      await pumpHome(tester, const PaymentsLoadFailure());
+      await pumpHome(tester, const PaymentsError());
 
       await tester.tap(find.text('Try again'));
 
-      verify(() => bloc.add(const PaymentsStarted())).called(1);
+      verify(() => bloc.add(const LoadPayments())).called(1);
     });
 
     testWidgets('lays out right to left without overflowing', (tester) async {

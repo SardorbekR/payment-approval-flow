@@ -2,13 +2,12 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:payment_approval/core/device_auth/device_authenticator.dart';
-import 'package:payment_approval/features/payments/data/data_sources/payments_api.dart';
-import 'package:payment_approval/features/payments/data/repositories/payments_repository.dart';
+import 'package:payment_approval/features/payments/data/data_sources/payments_data_source.dart';
 import 'package:payment_approval/features/payments/domain/models/payment.dart';
 import 'package:payment_approval/features/payments/domain/models/payment_request.dart';
+import 'package:payment_approval/features/payments/domain/repositories/payments_repository.dart';
 
 part 'approval_event.dart';
-
 part 'approval_state.dart';
 
 /// Drives one approval sheet. A decision is only sent after device
@@ -22,17 +21,17 @@ class ApprovalBloc extends Bloc<ApprovalEvent, ApprovalState> {
   }) : _request = request,
        _repository = repository,
        _authenticator = authenticator,
-       super(const ApprovalIdle()) {
+       super(const ApprovalInitial()) {
     // Taps that arrive while a decision is in progress are dropped, so the
     // same request is never submitted twice.
-    on<ApprovalSubmitted>(_onSubmitted, transformer: droppable());
+    on<SubmitDecision>(_submitDecision, transformer: droppable());
   }
 
   final PaymentRequest _request;
   final PaymentsRepository _repository;
   final DeviceAuthenticator _authenticator;
 
-  Future<void> _onSubmitted(ApprovalSubmitted event, Emitter<ApprovalState> emit) async {
+  Future<void> _submitDecision(SubmitDecision event, Emitter<ApprovalState> emit) async {
     final decision = event.decision;
     emit(ApprovalAuthenticating(decision));
 
@@ -43,7 +42,7 @@ class ApprovalBloc extends Bloc<ApprovalEvent, ApprovalState> {
       authResult = await _authenticator.authenticate(reason: event.authReason);
     } catch (error, stackTrace) {
       addError(error, stackTrace);
-      emit(ApprovalFailed(decision, ApprovalError.authFailed));
+      emit(ApprovalError(decision, ApprovalErrorReason.authFailed));
       return;
     }
 
@@ -51,27 +50,27 @@ class ApprovalBloc extends Bloc<ApprovalEvent, ApprovalState> {
       case DeviceAuthResult.success:
         break;
       case DeviceAuthResult.canceled:
-        emit(const ApprovalIdle());
+        emit(const ApprovalInitial());
         return;
       case DeviceAuthResult.failed:
-        emit(ApprovalFailed(decision, ApprovalError.authFailed));
+        emit(ApprovalError(decision, ApprovalErrorReason.authFailed));
         return;
       case DeviceAuthResult.lockedOut:
-        emit(ApprovalFailed(decision, ApprovalError.authLockedOut));
+        emit(ApprovalError(decision, ApprovalErrorReason.authLockedOut));
         return;
       case DeviceAuthResult.unavailable:
-        emit(ApprovalFailed(decision, ApprovalError.authUnavailable));
+        emit(ApprovalError(decision, ApprovalErrorReason.authUnavailable));
         return;
     }
 
     emit(ApprovalSubmitting(decision));
     try {
-      emit(ApprovalSucceeded(await _repository.decide(_request, decision)));
+      emit(ApprovalSuccess(await _repository.decide(_request, decision)));
     } on RequestUnavailableException {
-      emit(ApprovalFailed(decision, ApprovalError.requestUnavailable));
+      emit(ApprovalError(decision, ApprovalErrorReason.requestUnavailable));
     } catch (error, stackTrace) {
       addError(error, stackTrace);
-      emit(ApprovalFailed(decision, ApprovalError.submitFailed));
+      emit(ApprovalError(decision, ApprovalErrorReason.submitFailed));
     }
   }
 }

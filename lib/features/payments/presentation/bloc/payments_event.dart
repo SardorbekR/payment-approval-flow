@@ -5,6 +5,6 @@ sealed class PaymentsEvent {
 }
 
 /// Loads the payments and follows every change after that. Also used to retry.
-final class PaymentsStarted extends PaymentsEvent {
-  const PaymentsStarted();
+class LoadPayments extends PaymentsEvent {
+  const LoadPayments();
 }

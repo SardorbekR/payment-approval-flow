@@ -8,8 +8,8 @@ import 'package:clock/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:payment_approval/app.dart';
-import 'package:payment_approval/features/payments/data/data_sources/in_memory_payments_api.dart';
-import 'package:payment_approval/features/payments/data/repositories/payments_repository.dart';
+import 'package:payment_approval/features/payments/data/data_sources/in_memory_payments_data_source.dart';
+import 'package:payment_approval/features/payments/domain/repositories/payments_repository.dart';
 
 import '../helpers/fakes.dart';
 
@@ -39,7 +39,7 @@ void main() {
     await tester.pumpWidget(
       App(
         navigatorKey: GlobalKey<NavigatorState>(),
-        repository: PaymentsRepository(api: InMemoryPaymentsApi(random: Random(3))),
+        repository: PaymentsRepository(dataSource: InMemoryPaymentsDataSource(random: Random(3))),
         authenticator: FakeDeviceAuthenticator(),
         showDemoFrame: framed,
       ),

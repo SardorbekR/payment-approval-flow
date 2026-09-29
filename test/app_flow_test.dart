@@ -11,10 +11,10 @@ import 'package:payment_approval/core/formatting/money_formatter.dart';
 import 'package:payment_approval/features/approval/presentation/approval_presenter.dart';
 import 'package:payment_approval/features/approval/presentation/widgets/approval_sheet.dart';
 import 'package:payment_approval/features/home/presentation/pages/home_page.dart';
-import 'package:payment_approval/features/payments/data/data_sources/in_memory_payments_api.dart';
-import 'package:payment_approval/features/payments/data/repositories/payments_repository.dart';
+import 'package:payment_approval/features/payments/data/data_sources/in_memory_payments_data_source.dart';
 import 'package:payment_approval/features/payments/domain/models/money.dart';
 import 'package:payment_approval/features/payments/domain/models/payment.dart';
+import 'package:payment_approval/features/payments/domain/repositories/payments_repository.dart';
 import 'package:payment_approval/features/payments/presentation/pages/payment_details_page.dart';
 import 'package:payment_approval/features/payments/presentation/widgets/payment_tile.dart';
 
@@ -25,26 +25,26 @@ import 'helpers/test_app.dart';
 /// presenter. Only device authentication is faked.
 void main() {
   final now = DateTime(2026, 9, 29, 12);
-  late InMemoryPaymentsApi api;
+  late InMemoryPaymentsDataSource api;
   late FakeDeviceAuthenticator authenticator;
 
   Future<void> pumpApp(
     WidgetTester tester, {
     Size screen = const Size(390, 844),
     bool framed = false,
-    InMemoryPaymentsApi? server,
+    InMemoryPaymentsDataSource? server,
   }) async {
     tester.view
       ..physicalSize = screen
       ..devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    api = server ?? InMemoryPaymentsApi(random: Random(7));
+    api = server ?? InMemoryPaymentsDataSource(random: Random(7));
     authenticator = FakeDeviceAuthenticator();
 
     await tester.pumpWidget(
       App(
         navigatorKey: GlobalKey<NavigatorState>(),
-        repository: PaymentsRepository(api: api),
+        repository: PaymentsRepository(dataSource: api),
         authenticator: authenticator,
         showDemoFrame: framed,
       ),
@@ -467,7 +467,7 @@ void main() {
   });
 }
 
-class _UnreachableForNewRequests extends InMemoryPaymentsApi {
+class _UnreachableForNewRequests extends InMemoryPaymentsDataSource {
   _UnreachableForNewRequests() : super(random: Random(7));
 
   @override

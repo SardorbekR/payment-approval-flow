@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:clock/clock.dart';
-import 'package:payment_approval/features/payments/data/data_sources/payments_api.dart';
+import 'package:payment_approval/features/payments/data/data_sources/payments_data_source.dart';
 import 'package:payment_approval/features/payments/data/data_sources/recipient_mask.dart';
 
 part 'in_memory_payments_seed.dart';
@@ -12,8 +12,8 @@ part 'in_memory_payments_seed.dart';
 /// what each response may contain. Pending requests go out with a masked name
 /// and no amount; the full payment is only returned once a decision is submitted.
 /// [latency] makes loading and submitting states visible in the demo.
-class InMemoryPaymentsApi implements PaymentsApi {
-  InMemoryPaymentsApi({Random? random, Duration latency = Duration.zero})
+class InMemoryPaymentsDataSource implements PaymentsDataSource {
+  InMemoryPaymentsDataSource({Random? random, Duration latency = Duration.zero})
     : _random = random ?? Random(),
       _latency = latency {
     for (final record in _seedRecords(clock.now())) {

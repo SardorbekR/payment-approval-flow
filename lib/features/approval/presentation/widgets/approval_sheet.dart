@@ -22,7 +22,7 @@ class ApprovalSheet extends StatelessWidget {
       PaymentStatus.rejected => l10n.authReasonReject(request.reference),
     };
 
-    context.read<ApprovalBloc>().add(ApprovalSubmitted(decision, authReason: reason));
+    context.read<ApprovalBloc>().add(SubmitDecision(decision, authReason: reason));
   }
 
   @override
@@ -31,12 +31,12 @@ class ApprovalSheet extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     return BlocConsumer<ApprovalBloc, ApprovalState>(
-      listenWhen: (previous, current) => current is ApprovalSucceeded,
-      listener: (context, state) => Navigator.of(context).pop((state as ApprovalSucceeded).payment),
+      listenWhen: (previous, current) => current is ApprovalSuccess,
+      listener: (context, state) => Navigator.of(context).pop((state as ApprovalSuccess).payment),
       builder: (context, state) {
         final isBusy = state.isBusy;
         final isRequestGone =
-            state is ApprovalFailed && state.error == ApprovalError.requestUnavailable;
+            state is ApprovalError && state.reason == ApprovalErrorReason.requestUnavailable;
         final pendingDecision = switch (state) {
           ApprovalAuthenticating(:final decision) ||
           ApprovalSubmitting(:final decision) => decision,
@@ -101,10 +101,10 @@ class ApprovalSheet extends StatelessWidget {
 
                   // Outcome
                   _AnimatedSlot(
-                    child: state is ApprovalFailed
+                    child: state is ApprovalError
                         ? Padding(
                             padding: const EdgeInsets.only(bottom: 16),
-                            child: _ErrorMessage(error: state.error),
+                            child: _ErrorMessage(reason: state.reason),
                           )
                         : null,
                   ),
@@ -244,20 +244,20 @@ class _RequestRow extends StatelessWidget {
 }
 
 class _ErrorMessage extends StatelessWidget {
-  const _ErrorMessage({required this.error});
+  const _ErrorMessage({required this.reason});
 
-  final ApprovalError error;
+  final ApprovalErrorReason reason;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final message = switch (error) {
-      ApprovalError.authFailed => l10n.approvalErrorAuthFailed,
-      ApprovalError.authLockedOut => l10n.approvalErrorAuthLockedOut,
-      ApprovalError.authUnavailable => l10n.approvalErrorAuthUnavailable,
-      ApprovalError.requestUnavailable => l10n.approvalErrorRequestUnavailable,
-      ApprovalError.submitFailed => l10n.approvalErrorSubmitFailed,
+    final message = switch (reason) {
+      ApprovalErrorReason.authFailed => l10n.approvalErrorAuthFailed,
+      ApprovalErrorReason.authLockedOut => l10n.approvalErrorAuthLockedOut,
+      ApprovalErrorReason.authUnavailable => l10n.approvalErrorAuthUnavailable,
+      ApprovalErrorReason.requestUnavailable => l10n.approvalErrorRequestUnavailable,
+      ApprovalErrorReason.submitFailed => l10n.approvalErrorSubmitFailed,
     };
 
     return Semantics(

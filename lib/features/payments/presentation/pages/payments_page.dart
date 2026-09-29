@@ -7,7 +7,7 @@ import 'package:payment_approval/core/formatting/date_formatter.dart';
 import 'package:payment_approval/features/payments/domain/models/payment.dart';
 import 'package:payment_approval/features/payments/presentation/bloc/payments_bloc.dart';
 import 'package:payment_approval/features/payments/presentation/widgets/payment_tile.dart';
-import 'package:payment_approval/features/payments/presentation/widgets/payments_load_failure_view.dart';
+import 'package:payment_approval/features/payments/presentation/widgets/payments_error_view.dart';
 import 'package:payment_approval/features/shared/widgets/message_view.dart';
 import 'package:payment_approval/features/shared/widgets/section_card.dart';
 import 'package:payment_approval/features/shared/widgets/section_header.dart';
@@ -85,7 +85,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
           listener: _revealTopPayment,
           builder: (context, state) => switch (state) {
             PaymentsLoading() => const Center(child: CircularProgressIndicator()),
-            PaymentsLoadFailure() => const PaymentsLoadFailureView(),
+            PaymentsError() => const PaymentsErrorView(),
             PaymentsLoaded(:final snapshot) when snapshot.payments.isEmpty => MessageView(
               icon: Icons.receipt_long_outlined,
               title: l10n.noPaymentsTitle,

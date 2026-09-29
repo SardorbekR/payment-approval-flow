@@ -1,4 +1,4 @@
-part of 'in_memory_payments_api.dart';
+part of 'in_memory_payments_data_source.dart';
 
 const _recipientNames = [
   'Fatima Al Zahra',

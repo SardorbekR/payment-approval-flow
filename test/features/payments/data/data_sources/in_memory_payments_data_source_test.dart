@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:clock/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:payment_approval/features/payments/data/data_sources/in_memory_payments_api.dart';
-import 'package:payment_approval/features/payments/data/data_sources/payments_api.dart';
+import 'package:payment_approval/features/payments/data/data_sources/in_memory_payments_data_source.dart';
+import 'package:payment_approval/features/payments/data/data_sources/payments_data_source.dart';
 import 'package:payment_approval/features/payments/data/data_sources/recipient_mask.dart';
 import 'package:payment_approval/features/payments/data/models/payment_json.dart';
 import 'package:payment_approval/features/payments/domain/models/money.dart';
@@ -16,7 +16,7 @@ void main() {
       final now = DateTime(2026, 9, 29, 12);
 
       await withClock(Clock.fixed(now), () async {
-        final payments = (await InMemoryPaymentsApi().fetchPayments()).map(paymentFromJson);
+        final payments = (await InMemoryPaymentsDataSource().fetchPayments()).map(paymentFromJson);
 
         expect(
           MonthlySummary.of(payments, now: now, currency: Currency.aed),
@@ -33,7 +33,7 @@ void main() {
       final firstOfMonth = DateTime(2026, 10, 1, 0, 5);
 
       await withClock(Clock.fixed(firstOfMonth), () async {
-        final payments = (await InMemoryPaymentsApi().fetchPayments()).map(paymentFromJson);
+        final payments = (await InMemoryPaymentsDataSource().fetchPayments()).map(paymentFromJson);
         final thisMonth = payments.where((payment) {
           return !payment.decidedAt.isBefore(DateTime(2026, 10)) &&
               !payment.decidedAt.isAfter(firstOfMonth);
@@ -44,13 +44,13 @@ void main() {
     });
 
     test('has no pending requests', () async {
-      expect(await InMemoryPaymentsApi().fetchPendingRequests(), isEmpty);
+      expect(await InMemoryPaymentsDataSource().fetchPendingRequests(), isEmpty);
     });
   });
 
   group('createDebugRequest', () {
     test('sends a masked recipient and no amount', () async {
-      final json = await InMemoryPaymentsApi(random: Random(1)).createDebugRequest();
+      final json = await InMemoryPaymentsDataSource(random: Random(1)).createDebugRequest();
 
       expect(
         json.keys,
@@ -61,7 +61,7 @@ void main() {
     });
 
     test('keeps the request pending until it is decided', () async {
-      final api = InMemoryPaymentsApi(random: Random(1));
+      final api = InMemoryPaymentsDataSource(random: Random(1));
 
       final json = await api.createDebugRequest();
 
@@ -69,7 +69,7 @@ void main() {
     });
 
     test('never reuses an id or a reference', () async {
-      final api = InMemoryPaymentsApi(random: Random(7));
+      final api = InMemoryPaymentsDataSource(random: Random(7));
 
       final requests = [for (var i = 0; i < 300; i++) await api.createDebugRequest()];
 
@@ -80,7 +80,7 @@ void main() {
 
   group('submitDecision', () {
     test('returns the full payment and moves it out of the pending requests', () async {
-      final api = InMemoryPaymentsApi(random: Random(1));
+      final api = InMemoryPaymentsDataSource(random: Random(1));
       final request = paymentRequestFromJson(await api.createDebugRequest());
 
       final payment = paymentFromJson(
@@ -99,7 +99,7 @@ void main() {
       final decisionTime = DateTime.utc(2026, 9, 29, 10, 42);
 
       await withClock(Clock.fixed(decisionTime), () async {
-        final api = InMemoryPaymentsApi(random: Random(1));
+        final api = InMemoryPaymentsDataSource(random: Random(1));
         final request = paymentRequestFromJson(await api.createDebugRequest());
 
         final payment = paymentFromJson(
@@ -113,13 +113,13 @@ void main() {
 
     test('refuses a request it does not know', () async {
       await expectLater(
-        InMemoryPaymentsApi().submitDecision(requestId: 'pay_missing', decision: 'approved'),
+        InMemoryPaymentsDataSource().submitDecision(requestId: 'pay_missing', decision: 'approved'),
         throwsA(isA<RequestUnavailableException>()),
       );
     });
 
     test('answers a repeated decision with the payment it already recorded', () async {
-      final api = InMemoryPaymentsApi(random: Random(1));
+      final api = InMemoryPaymentsDataSource(random: Random(1));
       final request = paymentRequestFromJson(await api.createDebugRequest());
       final first = await api.submitDecision(requestId: request.id, decision: 'approved');
 
@@ -130,7 +130,7 @@ void main() {
     });
 
     test('refuses the opposite decision on a request that was already decided', () async {
-      final api = InMemoryPaymentsApi(random: Random(1));
+      final api = InMemoryPaymentsDataSource(random: Random(1));
       final request = paymentRequestFromJson(await api.createDebugRequest());
       await api.submitDecision(requestId: request.id, decision: 'approved');
 

@@ -4,8 +4,8 @@ import 'package:payment_approval/features/payments/presentation/bloc/payments_bl
 import 'package:payment_approval/features/shared/widgets/message_view.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 
-class PaymentsLoadFailureView extends StatelessWidget {
-  const PaymentsLoadFailureView({super.key});
+class PaymentsErrorView extends StatelessWidget {
+  const PaymentsErrorView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class PaymentsLoadFailureView extends StatelessWidget {
       title: l10n.loadFailedTitle,
       message: l10n.loadFailedMessage,
       actionLabel: l10n.retry,
-      onAction: () => context.read<PaymentsBloc>().add(const PaymentsStarted()),
+      onAction: () => context.read<PaymentsBloc>().add(const LoadPayments()),
     );
   }
 }

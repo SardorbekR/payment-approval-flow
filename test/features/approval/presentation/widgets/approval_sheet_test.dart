@@ -17,7 +17,7 @@ void main() {
   final request = tRequest(id: 'pay_req', reference: 'PAY-40117', maskedRecipient: 'A•••• K.');
 
   setUpAll(() {
-    registerFallbackValue(const ApprovalSubmitted(PaymentStatus.approved, authReason: ''));
+    registerFallbackValue(const SubmitDecision(PaymentStatus.approved, authReason: ''));
   });
 
   setUp(() {
@@ -45,7 +45,7 @@ void main() {
     testWidgets('shows the reference in full and hides the recipient and the amount', (
       tester,
     ) async {
-      await pumpSheet(tester, const ApprovalIdle());
+      await pumpSheet(tester, const ApprovalInitial());
 
       expect(find.text('PAY-40117'), findsOneWidget);
       expect(find.text('A•••• K.'), findsOneWidget);
@@ -56,7 +56,7 @@ void main() {
       tester,
     ) async {
       usePhoneScreen(tester, textScale: 2);
-      await pumpSheet(tester, const ApprovalIdle());
+      await pumpSheet(tester, const ApprovalInitial());
 
       final label = tester.getRect(find.text('Reference'));
       final value = tester.getRect(find.text('PAY-40117'));
@@ -69,7 +69,7 @@ void main() {
       tester,
     ) async {
       final semantics = tester.ensureSemantics();
-      await pumpSheet(tester, const ApprovalIdle());
+      await pumpSheet(tester, const ApprovalInitial());
 
       expect(find.bySemanticsLabel('To: Recipient hidden until you authenticate'), findsOneWidget);
       expect(find.bySemanticsLabel('Amount: Amount hidden until you authenticate'), findsOneWidget);
@@ -77,11 +77,11 @@ void main() {
     });
 
     testWidgets('asks the device with a reason that names the reference', (tester) async {
-      await pumpSheet(tester, const ApprovalIdle());
+      await pumpSheet(tester, const ApprovalInitial());
 
       await tester.tap(find.text('Approve'));
 
-      final event = verify(() => bloc.add(captureAny())).captured.single as ApprovalSubmitted;
+      final event = verify(() => bloc.add(captureAny())).captured.single as SubmitDecision;
       expect(event.decision, PaymentStatus.approved);
       expect(event.authReason, "Confirm it's you to approve payment PAY-40117");
     });
@@ -108,7 +108,7 @@ void main() {
     testWidgets('explains a failure and lets the user try again', (tester) async {
       await pumpSheet(
         tester,
-        const ApprovalFailed(PaymentStatus.approved, ApprovalError.authUnavailable),
+        const ApprovalError(PaymentStatus.approved, ApprovalErrorReason.authUnavailable),
       );
 
       expect(find.textContaining('Set up a screen lock'), findsOneWidget);
@@ -119,7 +119,7 @@ void main() {
     testWidgets('offers only Close for a request that is gone', (tester) async {
       await pumpSheet(
         tester,
-        const ApprovalFailed(PaymentStatus.approved, ApprovalError.requestUnavailable),
+        const ApprovalError(PaymentStatus.approved, ApprovalErrorReason.requestUnavailable),
       );
 
       expect(find.textContaining('no longer available'), findsOneWidget);

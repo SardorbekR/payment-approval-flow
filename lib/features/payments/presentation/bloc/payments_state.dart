@@ -7,15 +7,15 @@ sealed class PaymentsState extends Equatable {
   List<Object?> get props => [];
 }
 
-final class PaymentsLoading extends PaymentsState {
+class PaymentsLoading extends PaymentsState {
   const PaymentsLoading();
 }
 
-final class PaymentsLoadFailure extends PaymentsState {
-  const PaymentsLoadFailure();
+class PaymentsError extends PaymentsState {
+  const PaymentsError();
 }
 
-final class PaymentsLoaded extends PaymentsState {
+class PaymentsLoaded extends PaymentsState {
   const PaymentsLoaded(this.snapshot);
 
   final PaymentsSnapshot snapshot;

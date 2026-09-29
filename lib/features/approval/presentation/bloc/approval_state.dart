@@ -1,6 +1,12 @@
 part of 'approval_bloc.dart';
 
-enum ApprovalError { authFailed, authLockedOut, authUnavailable, requestUnavailable, submitFailed }
+enum ApprovalErrorReason {
+  authFailed,
+  authLockedOut,
+  authUnavailable,
+  requestUnavailable,
+  submitFailed,
+}
 
 sealed class ApprovalState extends Equatable {
   const ApprovalState();
@@ -12,11 +18,11 @@ sealed class ApprovalState extends Equatable {
   List<Object?> get props => [];
 }
 
-final class ApprovalIdle extends ApprovalState {
-  const ApprovalIdle();
+class ApprovalInitial extends ApprovalState {
+  const ApprovalInitial();
 }
 
-final class ApprovalAuthenticating extends ApprovalState {
+class ApprovalAuthenticating extends ApprovalState {
   const ApprovalAuthenticating(this.decision);
 
   final PaymentStatus decision;
@@ -28,7 +34,7 @@ final class ApprovalAuthenticating extends ApprovalState {
   List<Object?> get props => [decision];
 }
 
-final class ApprovalSubmitting extends ApprovalState {
+class ApprovalSubmitting extends ApprovalState {
   const ApprovalSubmitting(this.decision);
 
   final PaymentStatus decision;
@@ -41,8 +47,8 @@ final class ApprovalSubmitting extends ApprovalState {
 }
 
 /// The decision was recorded. The sheet closes with [payment].
-final class ApprovalSucceeded extends ApprovalState {
-  const ApprovalSucceeded(this.payment);
+class ApprovalSuccess extends ApprovalState {
+  const ApprovalSuccess(this.payment);
 
   final Payment payment;
 
@@ -53,12 +59,12 @@ final class ApprovalSucceeded extends ApprovalState {
   List<Object?> get props => [payment];
 }
 
-final class ApprovalFailed extends ApprovalState {
-  const ApprovalFailed(this.decision, this.error);
+class ApprovalError extends ApprovalState {
+  const ApprovalError(this.decision, this.reason);
 
   final PaymentStatus decision;
-  final ApprovalError error;
+  final ApprovalErrorReason reason;
 
   @override
-  List<Object?> get props => [decision, error];
+  List<Object?> get props => [decision, reason];
 }

@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:payment_approval/features/payments/data/data_sources/payments_api.dart';
-import 'package:payment_approval/features/payments/data/repositories/payments_repository.dart';
+import 'package:payment_approval/features/payments/data/data_sources/payments_data_source.dart';
 import 'package:payment_approval/features/payments/domain/models/payment.dart';
 import 'package:payment_approval/features/payments/domain/models/payments_snapshot.dart';
+import 'package:payment_approval/features/payments/domain/repositories/payments_repository.dart';
 
 import '../../payments_seed.dart';
 
-class MockPaymentsApi extends Mock implements PaymentsApi {}
+class MockPaymentsApi extends Mock implements PaymentsDataSource {}
 
 void main() {
   late MockPaymentsApi api;
@@ -45,7 +45,7 @@ void main() {
 
   setUp(() {
     api = MockPaymentsApi();
-    repository = PaymentsRepository(api: api);
+    repository = PaymentsRepository(dataSource: api);
 
     when(() => api.fetchPayments()).thenAnswer((_) async => [tPaymentJson()]);
     when(() => api.fetchPendingRequests()).thenAnswer((_) async => [tRequestJson()]);

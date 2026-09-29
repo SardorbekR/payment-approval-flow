@@ -5,9 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:payment_approval/core/device_auth/device_authenticator.dart';
 import 'package:payment_approval/features/approval/presentation/bloc/approval_bloc.dart';
-import 'package:payment_approval/features/payments/data/data_sources/payments_api.dart';
-import 'package:payment_approval/features/payments/data/repositories/payments_repository.dart';
+import 'package:payment_approval/features/payments/data/data_sources/payments_data_source.dart';
 import 'package:payment_approval/features/payments/domain/models/payment.dart';
+import 'package:payment_approval/features/payments/domain/repositories/payments_repository.dart';
 
 import '../../../payments/payments_seed.dart';
 
@@ -24,8 +24,8 @@ void main() {
   final approved = tPayment(id: 'pay_req', reference: 'PAY-40117');
   final rejected = tPayment(id: 'pay_req', reference: 'PAY-40117', status: PaymentStatus.rejected);
 
-  const approve = ApprovalSubmitted(PaymentStatus.approved, authReason: 'Approve PAY-40117');
-  const reject = ApprovalSubmitted(PaymentStatus.rejected, authReason: 'Reject PAY-40117');
+  const approve = SubmitDecision(PaymentStatus.approved, authReason: 'Approve PAY-40117');
+  const reject = SubmitDecision(PaymentStatus.rejected, authReason: 'Reject PAY-40117');
 
   setUpAll(() {
     registerFallbackValue(tRequest());
@@ -46,7 +46,7 @@ void main() {
     ).thenAnswer((_) async => result);
   }
 
-  group('ApprovalSubmitted', () {
+  group('SubmitDecision', () {
     blocTest<ApprovalBloc, ApprovalState>(
       'approves once the device confirms the owner',
       setUp: () {
@@ -59,7 +59,7 @@ void main() {
       expect: () => [
         const ApprovalAuthenticating(PaymentStatus.approved),
         const ApprovalSubmitting(PaymentStatus.approved),
-        ApprovalSucceeded(approved),
+        ApprovalSuccess(approved),
       ],
       verify: (_) =>
           verify(() => authenticator.authenticate(reason: 'Approve PAY-40117')).called(1),
@@ -77,7 +77,7 @@ void main() {
       expect: () => [
         const ApprovalAuthenticating(PaymentStatus.rejected),
         const ApprovalSubmitting(PaymentStatus.rejected),
-        ApprovalSucceeded(rejected),
+        ApprovalSuccess(rejected),
       ],
     );
 
@@ -86,14 +86,14 @@ void main() {
       setUp: () => authenticateWith(DeviceAuthResult.canceled),
       build: buildBloc,
       act: (bloc) => bloc.add(approve),
-      expect: () => [const ApprovalAuthenticating(PaymentStatus.approved), const ApprovalIdle()],
+      expect: () => [const ApprovalAuthenticating(PaymentStatus.approved), const ApprovalInitial()],
       verify: (_) => verifyNever(() => repository.decide(any(), any())),
     );
 
     const authFailures = {
-      DeviceAuthResult.failed: ApprovalError.authFailed,
-      DeviceAuthResult.lockedOut: ApprovalError.authLockedOut,
-      DeviceAuthResult.unavailable: ApprovalError.authUnavailable,
+      DeviceAuthResult.failed: ApprovalErrorReason.authFailed,
+      DeviceAuthResult.lockedOut: ApprovalErrorReason.authLockedOut,
+      DeviceAuthResult.unavailable: ApprovalErrorReason.authUnavailable,
     };
 
     for (final MapEntry(key: result, value: error) in authFailures.entries) {
@@ -104,7 +104,7 @@ void main() {
         act: (bloc) => bloc.add(reject),
         expect: () => [
           const ApprovalAuthenticating(PaymentStatus.rejected),
-          ApprovalFailed(PaymentStatus.rejected, error),
+          ApprovalError(PaymentStatus.rejected, error),
         ],
         verify: (_) => verifyNever(() => repository.decide(any(), any())),
       );
@@ -121,7 +121,7 @@ void main() {
       act: (bloc) => bloc.add(approve),
       expect: () => [
         const ApprovalAuthenticating(PaymentStatus.approved),
-        const ApprovalFailed(PaymentStatus.approved, ApprovalError.authFailed),
+        const ApprovalError(PaymentStatus.approved, ApprovalErrorReason.authFailed),
       ],
       errors: () => [isA<StateError>()],
       verify: (_) => verifyNever(() => repository.decide(any(), any())),
@@ -140,7 +140,7 @@ void main() {
       expect: () => [
         const ApprovalAuthenticating(PaymentStatus.approved),
         const ApprovalSubmitting(PaymentStatus.approved),
-        const ApprovalFailed(PaymentStatus.approved, ApprovalError.submitFailed),
+        const ApprovalError(PaymentStatus.approved, ApprovalErrorReason.submitFailed),
       ],
       errors: () => [isA<StateError>()],
     );
@@ -158,7 +158,7 @@ void main() {
       expect: () => [
         const ApprovalAuthenticating(PaymentStatus.approved),
         const ApprovalSubmitting(PaymentStatus.approved),
-        const ApprovalFailed(PaymentStatus.approved, ApprovalError.requestUnavailable),
+        const ApprovalError(PaymentStatus.approved, ApprovalErrorReason.requestUnavailable),
       ],
     );
 
@@ -181,10 +181,10 @@ void main() {
       expect: () => [
         const ApprovalAuthenticating(PaymentStatus.approved),
         const ApprovalSubmitting(PaymentStatus.approved),
-        const ApprovalFailed(PaymentStatus.approved, ApprovalError.submitFailed),
+        const ApprovalError(PaymentStatus.approved, ApprovalErrorReason.submitFailed),
         const ApprovalAuthenticating(PaymentStatus.approved),
         const ApprovalSubmitting(PaymentStatus.approved),
-        ApprovalSucceeded(approved),
+        ApprovalSuccess(approved),
       ],
       errors: () => [isA<Exception>()],
       verify: (_) =>
@@ -212,7 +212,7 @@ void main() {
       expect: () => [
         const ApprovalAuthenticating(PaymentStatus.approved),
         const ApprovalSubmitting(PaymentStatus.approved),
-        ApprovalSucceeded(approved),
+        ApprovalSuccess(approved),
       ],
       verify: (_) {
         verify(() => authenticator.authenticate(reason: any(named: 'reason'))).called(1);

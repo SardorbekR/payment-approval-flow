@@ -6,7 +6,7 @@ import 'package:payment_approval/core/device_auth/device_authenticator.dart';
 import 'package:payment_approval/core/theme/app_theme.dart';
 import 'package:payment_approval/features/approval/presentation/approval_presenter.dart';
 import 'package:payment_approval/features/debug_fab/debug_fab_overlay.dart';
-import 'package:payment_approval/features/payments/data/repositories/payments_repository.dart';
+import 'package:payment_approval/features/payments/domain/repositories/payments_repository.dart';
 import 'package:payment_approval/features/payments/presentation/bloc/payments_bloc.dart';
 import 'package:payment_approval/features/shared/widgets/demo_frame.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
@@ -64,7 +64,7 @@ class _AppState extends State<App> {
         RepositoryProvider.value(value: _presenter),
       ],
       child: BlocProvider(
-        create: (_) => PaymentsBloc(repository: widget.repository)..add(const PaymentsStarted()),
+        create: (_) => PaymentsBloc(repository: widget.repository)..add(const LoadPayments()),
         child: MaterialApp.router(
           onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
           debugShowCheckedModeBanner: false,

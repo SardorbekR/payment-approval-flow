@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:payment_approval/features/payments/data/data_sources/payments_api.dart';
+import 'package:payment_approval/features/payments/data/data_sources/payments_data_source.dart';
 import 'package:payment_approval/features/payments/data/models/payment_json.dart';
 import 'package:payment_approval/features/payments/domain/models/payment.dart';
 import 'package:payment_approval/features/payments/domain/models/payment_request.dart';
@@ -11,9 +11,9 @@ import 'package:payment_approval/features/payments/domain/models/payments_snapsh
 /// Every change is published as a whole [PaymentsSnapshot], so the list, the
 /// Home summary and the details screen always show the same state.
 class PaymentsRepository {
-  PaymentsRepository({required PaymentsApi api}) : _api = api;
+  PaymentsRepository({required PaymentsDataSource dataSource}) : _dataSource = dataSource;
 
-  final PaymentsApi _api;
+  final PaymentsDataSource _dataSource;
   final _changes = StreamController<PaymentsSnapshot>.broadcast();
   PaymentsSnapshot? _snapshot;
 
@@ -35,8 +35,8 @@ class PaymentsRepository {
   /// any item is malformed, so a partial list is never shown as complete.
   Future<void> load() async {
     final [paymentsJson, requestsJson] = await Future.wait([
-      _api.fetchPayments(),
-      _api.fetchPendingRequests(),
+      _dataSource.fetchPayments(),
+      _dataSource.fetchPendingRequests(),
     ]);
 
     _publish(
@@ -50,7 +50,7 @@ class PaymentsRepository {
   /// Asks the server for a new incoming request and adds it to the pending ones.
   Future<PaymentRequest> createDebugRequest() async {
     _requireSnapshot();
-    final request = paymentRequestFromJson(await _api.createDebugRequest());
+    final request = paymentRequestFromJson(await _dataSource.createDebugRequest());
     _publish(_requireSnapshot().withPendingRequest(request));
 
     return request;
@@ -67,7 +67,10 @@ class PaymentsRepository {
     _requireSnapshot();
     try {
       final payment = paymentFromJson(
-        await _api.submitDecision(requestId: request.id, decision: paymentStatusToJson(decision)),
+        await _dataSource.submitDecision(
+          requestId: request.id,
+          decision: paymentStatusToJson(decision),
+        ),
       );
       if (payment.id != request.id) {
         throw FormatException('Decision response belongs to another payment', payment.id);
