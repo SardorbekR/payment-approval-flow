@@ -43,7 +43,7 @@ A small Flutter feature built the way I would ship it inside a production bankin
 | Debug button on every screen | It lives above the router, so it floats over every screen, including details. |
 | Drag anywhere, stays for the session | Position is kept in the overlay's state for the life of the app, clamped to the screen and clear of the notch and home indicator. |
 | Tap for a new request | The in-memory server creates one and the sheet opens. |
-| Request appears over the current screen | A modal bottom sheet, not a new route. |
+| Request appears over the current screen | A modal bottom sheet over whatever is open, not a new page. |
 | Amount and name partly hidden, reference in full | See [How the data is protected](#how-the-data-is-protected). |
 | Approve takes me to Payments | After the sheet closes, the app navigates to Payments. If details were open, they close. |
 | Reject takes me back | Nothing navigates. A snackbar confirms it and offers to view the payment. |
@@ -51,19 +51,38 @@ A small Flutter feature built the way I would ship it inside a production bankin
 
 ## Beyond the brief
 
-- **The device never holds the amount or the full name before you authenticate.** A pending request carries only a masked name, the currency and the reference. The full payment comes back from the decision call, which runs only after device authentication succeeds.
-- **Masks that leak nothing.** The amount mask is always `AED ••,•••.••`, so it doesn't hint at the size of the payment. The name mask always uses four bullets, so it doesn't reveal the name's length.
+- **The amount and the full name reach the app only after authentication.**
+  - A pending request carries a masked name, the currency and the reference, nothing more.
+  - The full payment comes back from the decision call, which runs only after device authentication succeeds.
+  - In this demo the stand-in server runs inside the app, but the app code only ever sees what a real server would send.
+- **Masks show only what the design shows.**
+  - The amount mask is always `AED ••,•••.••`, so it doesn't hint at the size of the payment.
+  - The name keeps only its initials and always uses four bullets, so its length stays hidden.
 - **Both decisions need device authentication.** A rejected payment shows its full name and amount afterwards, so an unauthenticated reject would reveal them. It also stops someone holding your phone from rejecting your payments.
-- **Fails closed.** A failed match, a lockout, or a device with no screen lock blocks the decision with an explanation. A cancelled prompt changes nothing.
-- **No half-finished decisions.** While authentication or submission is running, the sheet can't be closed: back and tap-outside are blocked, and dragging is off because in Flutter a drag closes a bottom sheet without asking `PopScope`. Extra taps are dropped with `droppable()`, and a retry authenticates again.
+- **Authentication fails closed.** A failed match, a lockout, a device with no screen lock or an unexpected platform error blocks the decision with an explanation. A cancelled prompt changes nothing.
+- **Decisions finish cleanly.**
+  - While authentication or submission is running, the sheet can't be closed: back and tap-outside are blocked, and dragging is off, because in Flutter a drag closes a bottom sheet without asking `PopScope`.
+  - Extra taps are dropped with `droppable()`, and a retry authenticates again.
+  - If the sheet is removed anyway (the browser's back button on the web), the decision carries on and its real outcome still applies.
+- **The app reconciles with the server.**
+  - When a decision fails, the server may have recorded it before the connection dropped, or the request was decided elsewhere. Either way the app reloads, so every screen shows what really happened.
+  - Repeating a recorded decision returns the same payment, so retrying is safe.
 - **Closing isn't rejecting.** A request you close stays pending and is listed on Home until you decide.
-- **A request decided elsewhere** is reported as no longer available and removed.
 - **Money is exact.** Amounts are integer minor units (fils) end to end, parsed strictly and formatted with integer math.
-- **Time is handled carefully.** Times are stored as UTC instants and shown in local time. "This month" follows your local calendar, and the tests pass in any time zone.
-- **Fresh demo data every visit.** The seed history mirrors the wireframe and always lands in the current month, even minutes after midnight on the 1st.
-- **The debug button behaves.** It follows the finger exactly, moves back on screen when the window shrinks, and hides while a sheet is open.
-- **Accessible and adaptable.** Light and dark themes. Layouts hold at 200% text size and in landscape. Screen readers hear "Amount hidden until you authenticate" instead of a row of bullets. Status never relies on color alone, and layouts are directional, ready for right-to-left.
-- **A web demo that respects your time.** On a wide window the app sits in a phone frame next to a three-step guide.
+- **Time zones are handled.** Times are stored as UTC instants and shown in local time. "This month" follows your local calendar, and the tests pass in any time zone.
+- **Seed data always lands in the current month.** It mirrors the wireframe, even minutes after midnight on the 1st.
+- **Debug button behavior:**
+  - it follows the finger exactly;
+  - it starts clear of snackbars and system areas;
+  - it moves back on screen when the window shrinks;
+  - it hides while a sheet is open.
+- **Accessibility and layout:**
+  - light and dark themes;
+  - layouts that hold at 200% text size and in landscape;
+  - screen-reader labels such as "Amount hidden until you authenticate" instead of a row of bullets;
+  - status that never relies on color alone;
+  - directional layouts ready for right-to-left.
+- **Web demo framing.** On a window of at least 900 by 640 pixels, the app sits in a phone frame next to a three-step guide.
 
 ## How the data is protected
 
@@ -114,7 +133,7 @@ flowchart LR
   - `PaymentsRepository` is the single source of truth. It publishes whole snapshots, and new listeners get the latest one.
 - **Presentation**:
   - One `PaymentsBloc` above the router feeds every screen.
-  - `ApprovalPresenter` owns the approval sheet, so only one is ever open, and decides where to go after a decision.
+  - `ApprovalPresenter` owns the approval sheet and the decision behind it: only one sheet is ever open, and a decision outlives its sheet. It also decides where to go afterwards.
   - `ApprovalBloc` runs authentication and then the decision.
 - **Routing** (`router.dart`) uses go_router's `StatefulShellRoute` for the two tabs. Details is a top-level route above them.
 
@@ -138,11 +157,11 @@ lib/
 - **No code generation.** freezed, json_serializable, injectable and mockito's generated mocks are all left out. The models are small, so hand-written code stays short and easy to review. mocktail and plain fakes cover the tests.
 - **Classic constructors.** Dart 3.13's new primary constructors are only weeks old. I kept the classic syntax and turned off the lint rules that push the new one, with a note in `analysis_options.yaml`.
 - **An in-memory server rather than mocks in the UI.** Latency, masking and error cases live in one place and behave like a backend would.
-- **One English locale, ready for more.** All strings are in ARB files and layouts are directional, so Arabic is a translation away.
+- **One English locale, ready for more.** All strings, including date patterns, are in ARB files, and layouts are directional. Money is formatted in the English style; Arabic would also need a locale-aware money format.
 
 ## Testing
 
-172 tests: unit, bloc (`bloc_test`), widget, end-to-end flows through the whole app, and golden screenshots.
+188 tests: unit, bloc (`bloc_test`), widget, end-to-end flows through the whole app, and golden screenshots.
 
 ```sh
 flutter test                         # everything (goldens are recorded on macOS)
@@ -157,7 +176,9 @@ flutter test --exclude-tags golden   # what CI runs on Linux
 - back and tap-outside being blocked while the prompt is open;
 - a cancelled prompt;
 - a request decided elsewhere;
-- the debug button keeping its place;
+- a sheet removed mid-decision;
+- a request that fails to arrive;
+- the debug button keeping its place, including when the web frame comes and goes;
 - large text and landscape.
 
 ## Running locally
