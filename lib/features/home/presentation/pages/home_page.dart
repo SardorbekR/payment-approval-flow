@@ -56,16 +56,16 @@ class _HomeContent extends StatelessWidget {
       // Leaves room for the debug button in its default spot.
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 168),
       children: [
-        /// Summary
+        // Summary
         MonthlySummaryCard(
           summary: MonthlySummary.of(payments, now: clock.now(), currency: Currency.aed),
         ),
 
-        /// Requests closed without a decision
+        // Requests closed without a decision
         if (snapshot.pendingRequests.isNotEmpty)
           PendingRequestsSection(requests: snapshot.pendingRequests),
 
-        /// Recent payments
+        // Recent payments
         SectionHeader(
           title: l10n.recentTitle,
           trailing: payments.isEmpty

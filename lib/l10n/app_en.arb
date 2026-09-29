@@ -69,6 +69,14 @@
     }
   },
 
+  "dateAndTime": "{date}, {time}",
+  "@dateAndTime": {
+    "placeholders": {
+      "date": {"type": "String"},
+      "time": {"type": "String"}
+    }
+  },
+
   "approvalTitle": "Approve this payment?",
   "approvalTo": "To",
   "approvalAmount": "Amount",

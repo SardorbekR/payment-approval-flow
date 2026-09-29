@@ -29,11 +29,34 @@ void main() {
   });
 
   group('defaultFabPosition', () {
-    test('starts in the bottom end corner, above the navigation bar and snackbars', () {
-      expect(
-        defaultFabPosition(screen: screen, safeArea: safeArea, size: size),
-        const Offset(390 - 56 - 16, 844 - 34 - 56 - 176),
-      );
+    Rect startingRect(TextDirection textDirection) =>
+        defaultFabPosition(
+          screen: screen,
+          safeArea: safeArea,
+          size: size,
+          textDirection: textDirection,
+        ) &
+        const Size.square(size);
+
+    test('starts at the end side for the reading direction', () {
+      expect(startingRect(TextDirection.ltr).right, greaterThan(screen.width - 32));
+      expect(startingRect(TextDirection.rtl).left, lessThan(32));
+    });
+
+    test('starts above the navigation bar and a two-line snackbar floating over it', () {
+      // Navigation bar (80), snackbar margin (12) and a two-line snackbar (68).
+      const snackBarTop = 844 - 34 - 80 - 12 - 68;
+
+      expect(startingRect(TextDirection.ltr).bottom, lessThanOrEqualTo(snackBarTop));
+    });
+
+    test('starts fully on screen', () {
+      final visible = Rect.fromLTRB(0, 47, screen.width, screen.height - 34);
+
+      for (final direction in TextDirection.values) {
+        final rect = startingRect(direction);
+        expect(visible.contains(rect.topLeft) && visible.contains(rect.bottomRight), isTrue);
+      }
     });
   });
 }

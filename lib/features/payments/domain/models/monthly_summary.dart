@@ -34,7 +34,10 @@ class MonthlySummary extends Equatable {
 
       switch (payment.status) {
         case PaymentStatus.approved:
-          assert(payment.amount.currency == currency, 'Amounts are never converted');
+          // Amounts are never converted between currencies.
+          if (payment.amount.currency != currency) {
+            throw ArgumentError.value(payment.amount, 'payments', 'Expected ${currency.code} only');
+          }
           totalMinorUnits += payment.amount.minorUnits;
           approvedCount++;
         case PaymentStatus.rejected:

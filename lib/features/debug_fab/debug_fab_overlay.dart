@@ -38,7 +38,13 @@ class _DebugFabOverlayState extends State<DebugFabOverlay> {
         final screen = constraints.biggest;
         final safeArea = MediaQuery.paddingOf(context);
         final position = clampFabPosition(
-          _position ?? defaultFabPosition(screen: screen, safeArea: safeArea, size: _size),
+          _position ??
+              defaultFabPosition(
+                screen: screen,
+                safeArea: safeArea,
+                size: _size,
+                textDirection: Directionality.of(context),
+              ),
           screen: screen,
           safeArea: safeArea,
           size: _size,

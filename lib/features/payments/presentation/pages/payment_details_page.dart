@@ -82,7 +82,7 @@ class _PaymentDetails extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 248),
       children: [
-        /// Header
+        // Header
         Center(child: RecipientAvatar(name: payment.recipientName, size: 64)),
         const SizedBox(height: 12),
         Text(
@@ -110,7 +110,7 @@ class _PaymentDetails extends StatelessWidget {
         ],
         const SizedBox(height: 28),
 
-        /// Details
+        // Details
         SectionCard(
           children: [
             _DetailRow(

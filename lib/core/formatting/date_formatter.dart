@@ -18,7 +18,7 @@ String formatPaymentDate(
     return l10n.paymentDateYesterday(time);
   }
   if (local.year == localNow.year) {
-    return '${DateFormat.MMMd(l10n.localeName).format(local)}, $time';
+    return l10n.dateAndTime(DateFormat.MMMd(l10n.localeName).format(local), time);
   }
 
   return DateFormat.yMMMd(l10n.localeName).format(local);
@@ -28,8 +28,10 @@ String formatPaymentDate(
 String formatFullDate(DateTime instant, {required AppLocalizations l10n}) {
   final local = instant.toLocal();
 
-  return '${DateFormat.yMMMd(l10n.localeName).format(local)}, '
-      '${DateFormat.jm(l10n.localeName).format(local)}';
+  return l10n.dateAndTime(
+    DateFormat.yMMMd(l10n.localeName).format(local),
+    DateFormat.jm(l10n.localeName).format(local),
+  );
 }
 
 /// Month and year for list sections: "September 2026".

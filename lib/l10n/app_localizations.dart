@@ -302,6 +302,12 @@ abstract class AppLocalizations {
   /// **'Yesterday, {time}'**
   String paymentDateYesterday(String time);
 
+  /// No description provided for @dateAndTime.
+  ///
+  /// In en, this message translates to:
+  /// **'{date}, {time}'**
+  String dateAndTime(String date, String time);
+
   /// No description provided for @approvalTitle.
   ///
   /// In en, this message translates to:

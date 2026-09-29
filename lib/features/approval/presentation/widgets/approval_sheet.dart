@@ -55,7 +55,7 @@ class ApprovalSheet extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  /// Title and close
+                  // Title and close
                   Row(
                     children: [
                       Expanded(
@@ -73,7 +73,7 @@ class ApprovalSheet extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
 
-                  /// Masked request
+                  // Masked request
                   _MaskedRequestCard(request: request),
                   const SizedBox(height: 12),
                   Row(
@@ -92,13 +92,13 @@ class ApprovalSheet extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
 
-                  /// Outcome
+                  // Outcome
                   if (state is ApprovalFailed) ...[
                     _ErrorMessage(error: state.error),
                     const SizedBox(height: 16),
                   ],
 
-                  /// Decisions
+                  // Decisions
                   if (isRequestGone)
                     FilledButton(
                       onPressed: () => Navigator.maybePop(context),
@@ -113,7 +113,7 @@ class ApprovalSheet extends StatelessWidget {
                                 ? null
                                 : () => _submit(context, PaymentStatus.rejected),
                             child: pendingDecision == PaymentStatus.rejected
-                                ? const _ButtonSpinner()
+                                ? _ButtonSpinner(label: l10n.reject)
                                 : Text(l10n.reject),
                           ),
                         ),
@@ -124,7 +124,7 @@ class ApprovalSheet extends StatelessWidget {
                                 ? null
                                 : () => _submit(context, PaymentStatus.approved),
                             child: pendingDecision == PaymentStatus.approved
-                                ? const _ButtonSpinner()
+                                ? _ButtonSpinner(label: l10n.approve)
                                 : Text(l10n.approve),
                           ),
                         ),
@@ -293,13 +293,16 @@ class _ErrorMessage extends StatelessWidget {
 }
 
 class _ButtonSpinner extends StatelessWidget {
-  const _ButtonSpinner();
+  const _ButtonSpinner({required this.label});
+
+  /// Keeps the button named for screen readers while the spinner replaces its text.
+  final String label;
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox.square(
+    return SizedBox.square(
       dimension: 20,
-      child: CircularProgressIndicator(strokeWidth: 2.4),
+      child: CircularProgressIndicator(strokeWidth: 2.4, semanticsLabel: label),
     );
   }
 }

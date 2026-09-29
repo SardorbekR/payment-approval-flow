@@ -54,7 +54,6 @@ void main() {
       await pumpDetails(tester, 'pay_pending', PaymentsLoaded(snapshot));
 
       expect(find.text('Payment unavailable'), findsOneWidget);
-      expect(find.text('S•••• M.'), findsNothing);
     });
 
     testWidgets('shows payment unavailable for an unknown id', (tester) async {

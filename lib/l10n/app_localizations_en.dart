@@ -140,6 +140,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String dateAndTime(String date, String time) {
+    return '$date, $time';
+  }
+
+  @override
   String get approvalTitle => 'Approve this payment?';
 
   @override
