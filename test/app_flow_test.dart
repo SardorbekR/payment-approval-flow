@@ -284,6 +284,40 @@ void main() {
     });
   });
 
+  testWidgets('a snackbar with an action times out like any other', (tester) async {
+    await withClock(Clock.fixed(now), () async {
+      await pumpApp(tester);
+      await receiveRequest(tester);
+      await tester.tap(find.byTooltip('Decide later'));
+      await tester.pumpAndSettle();
+      expect(find.byType(SnackBar), findsOneWidget);
+
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SnackBar), findsNothing);
+    });
+  });
+
+  testWidgets('a snackbar with an action stays for screen reader users', (tester) async {
+    tester.platformDispatcher.accessibilityFeaturesTestValue = const FakeAccessibilityFeatures(
+      accessibleNavigation: true,
+    );
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+
+    await withClock(Clock.fixed(now), () async {
+      await pumpApp(tester);
+      await receiveRequest(tester);
+      await tester.tap(find.byTooltip('Decide later'));
+      await tester.pumpAndSettle();
+
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SnackBar), findsOneWidget);
+    });
+  });
+
   testWidgets('asking for two requests at once opens a single sheet', (tester) async {
     await withClock(Clock.fixed(now), () async {
       await pumpApp(tester);

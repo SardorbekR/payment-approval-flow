@@ -160,6 +160,14 @@ class ApprovalPresenter {
     final l10n = AppLocalizations.of(context);
     messenger
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(message(l10n)), action: action?.call(l10n)));
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message(l10n)),
+          action: action?.call(l10n),
+          // Every action is also reachable from Home or Payments, so the snackbar
+          // times out like any other. Screen reader users get time to reach it.
+          persist: MediaQuery.accessibleNavigationOf(context),
+        ),
+      );
   }
 }
