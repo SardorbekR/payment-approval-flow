@@ -1,10 +1,12 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:payment_approval/features/payments/domain/models/payments_snapshot.dart';
 import 'package:payment_approval/features/payments/presentation/bloc/payments_bloc.dart';
 import 'package:payment_approval/features/payments/presentation/pages/payment_details_page.dart';
+import 'package:payment_approval/features/shared/widgets/section_card.dart';
 
 import '../../../../helpers/test_app.dart';
 import '../../payments_seed.dart';
@@ -36,6 +38,38 @@ void main() {
       expect(find.text('PAY-88213'), findsOneWidget);
       expect(find.text('Design retainer'), findsOneWidget);
       expect(find.textContaining('Sep 26, 2026'), findsOneWidget);
+    });
+
+    testWidgets('keeps the amount on one line when the text is large', (tester) async {
+      usePhoneScreen(tester, textScale: 2);
+      await pumpDetails(tester, 'pay_ahmed', PaymentsLoaded(tWireframeSnapshot));
+
+      final amount = find.text(aed('1,200.00'));
+      final paragraph = tester.renderObject<RenderParagraph>(amount);
+      final lines = paragraph.getBoxesForSelection(
+        TextSelection(baseOffset: 0, extentOffset: paragraph.text.toPlainText().length),
+      );
+      expect({for (final box in lines) box.top}, hasLength(1));
+      expect(tester.getRect(amount).width, lessThanOrEqualTo(390));
+    });
+
+    testWidgets('gives every detail row the same height', (tester) async {
+      await pumpDetails(tester, 'pay_ahmed', PaymentsLoaded(tWireframeSnapshot));
+
+      final card = tester.getRect(find.byType(SectionCard));
+      final dividers = find.descendant(
+        of: find.byType(SectionCard),
+        matching: find.byType(Divider),
+      );
+      final first = tester.getRect(dividers.at(0));
+      final second = tester.getRect(dividers.at(1));
+
+      final heights = [
+        first.top - card.top,
+        second.top - first.bottom,
+        card.bottom - second.bottom,
+      ];
+      expect(heights.toSet(), hasLength(1));
     });
 
     testWidgets('explains that a rejected payment moved no money', (tester) async {

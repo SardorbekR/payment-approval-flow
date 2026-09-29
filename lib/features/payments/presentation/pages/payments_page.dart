@@ -76,23 +76,28 @@ class _PaymentsPageState extends State<PaymentsPage> {
         title: Text(l10n.paymentsTitle),
         titleTextStyle: Theme.of(context).textTheme.headlineSmall,
       ),
-      body: BlocConsumer<PaymentsBloc, PaymentsState>(
-        listenWhen: _hasNewTopPayment,
-        listener: _revealTopPayment,
-        builder: (context, state) => switch (state) {
-          PaymentsLoading() => const Center(child: CircularProgressIndicator()),
-          PaymentsLoadFailure() => const PaymentsLoadFailureView(),
-          PaymentsLoaded(:final snapshot) when snapshot.payments.isEmpty => MessageView(
-            icon: Icons.receipt_long_outlined,
-            title: l10n.noPaymentsTitle,
-            message: l10n.noPaymentsMessage,
-          ),
-          PaymentsLoaded(:final snapshot) => _PaymentsList(
-            payments: snapshot.payments,
-            controller: _scrollController,
-            highlightedPaymentId: _highlightedPaymentId,
-          ),
-        },
+      // Keeps the content clear of a notch in landscape.
+      body: SafeArea(
+        top: false,
+        bottom: false,
+        child: BlocConsumer<PaymentsBloc, PaymentsState>(
+          listenWhen: _hasNewTopPayment,
+          listener: _revealTopPayment,
+          builder: (context, state) => switch (state) {
+            PaymentsLoading() => const Center(child: CircularProgressIndicator()),
+            PaymentsLoadFailure() => const PaymentsLoadFailureView(),
+            PaymentsLoaded(:final snapshot) when snapshot.payments.isEmpty => MessageView(
+              icon: Icons.receipt_long_outlined,
+              title: l10n.noPaymentsTitle,
+              message: l10n.noPaymentsMessage,
+            ),
+            PaymentsLoaded(:final snapshot) => _PaymentsList(
+              payments: snapshot.payments,
+              controller: _scrollController,
+              highlightedPaymentId: _highlightedPaymentId,
+            ),
+          },
+        ),
       ),
     );
   }

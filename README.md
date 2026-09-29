@@ -78,7 +78,7 @@ A small Flutter feature built the way I would ship it inside a production bankin
   - it hides while a sheet is open.
 - **Accessibility and layout:**
   - light and dark themes;
-  - layouts that hold at 200% text size and in landscape;
+  - layouts that hold at 200% text size (rows stack instead of squeezing, and amounts never break across lines) and in landscape (content stays clear of the notch);
   - screen-reader labels such as "Amount hidden until you authenticate" instead of a row of bullets;
   - status that never relies on color alone;
   - directional layouts ready for right-to-left.
@@ -164,7 +164,7 @@ lib/
 
 ## Testing
 
-189 tests: unit, bloc (`bloc_test`), widget, end-to-end flows through the whole app, and golden screenshots.
+198 tests: unit, bloc (`bloc_test`), widget, end-to-end flows through the whole app, and golden screenshots.
 
 ```sh
 flutter test                         # everything (goldens are recorded on macOS)
@@ -181,6 +181,7 @@ flutter test --exclude-tags golden   # what CI runs on Linux
 - a request decided elsewhere;
 - a sheet removed mid-decision;
 - a request that fails to arrive;
+- snackbars that time out, except for screen reader users;
 - the debug button keeping its place, including when the web frame comes and goes;
 - large text and landscape.
 

@@ -5,6 +5,7 @@ import 'package:payment_approval/core/theme/app_theme.dart';
 import 'package:payment_approval/features/approval/presentation/bloc/approval_bloc.dart';
 import 'package:payment_approval/features/payments/domain/models/payment.dart';
 import 'package:payment_approval/features/payments/domain/models/payment_request.dart';
+import 'package:payment_approval/features/shared/widgets/labeled_value.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 
 /// Asks the user to approve or reject a request without revealing who it pays
@@ -39,6 +40,12 @@ class ApprovalSheet extends StatelessWidget {
         final pendingDecision = switch (state) {
           ApprovalAuthenticating(:final decision) ||
           ApprovalSubmitting(:final decision) => decision,
+          _ => null,
+        };
+        final progress = switch (state) {
+          ApprovalAuthenticating() => l10n.approvalAuthenticating,
+          ApprovalSubmitting(decision: PaymentStatus.approved) => l10n.approvalApproving,
+          ApprovalSubmitting(decision: PaymentStatus.rejected) => l10n.approvalRejecting,
           _ => null,
         };
 
@@ -93,10 +100,14 @@ class ApprovalSheet extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   // Outcome
-                  if (state is ApprovalFailed) ...[
-                    _ErrorMessage(error: state.error),
-                    const SizedBox(height: 16),
-                  ],
+                  _AnimatedSlot(
+                    child: state is ApprovalFailed
+                        ? Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: _ErrorMessage(error: state.error),
+                          )
+                        : null,
+                  ),
 
                   // Decisions
                   if (isRequestGone)
@@ -130,23 +141,21 @@ class ApprovalSheet extends StatelessWidget {
                         ),
                       ],
                     ),
-                  if (state case ApprovalAuthenticating() || ApprovalSubmitting()) ...[
-                    const SizedBox(height: 12),
-                    Semantics(
-                      liveRegion: true,
-                      child: Text(
-                        switch (state) {
-                          ApprovalSubmitting(decision: PaymentStatus.approved) =>
-                            l10n.approvalApproving,
-                          ApprovalSubmitting(decision: PaymentStatus.rejected) =>
-                            l10n.approvalRejecting,
-                          _ => l10n.approvalAuthenticating,
-                        },
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                    ),
-                  ],
+                  _AnimatedSlot(
+                    child: progress == null
+                        ? null
+                        : Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: Semantics(
+                              liveRegion: true,
+                              child: Text(
+                                progress,
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ),
+                          ),
+                  ),
                 ],
               ),
             ),
@@ -213,25 +222,18 @@ class _RequestRow extends StatelessWidget {
 
     final row = Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        children: [
-          if (isMasked) ...[
-            Icon(Icons.lock_rounded, size: 14, color: theme.colorScheme.onSurfaceVariant),
-            const SizedBox(width: 6),
+      child: LabeledValue(
+        label: label,
+        value: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isMasked) ...[
+              Icon(Icons.lock_rounded, size: 14, color: theme.colorScheme.onSurfaceVariant),
+              const SizedBox(width: 6),
+            ],
+            Flexible(child: Text(value, style: theme.textTheme.titleSmall?.tabular)),
           ],
-          Text(
-            label,
-            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              value,
-              textAlign: TextAlign.end,
-              style: theme.textTheme.titleSmall?.tabular,
-            ),
-          ),
-        ],
+        ),
       ),
     );
 
@@ -288,6 +290,24 @@ class _ErrorMessage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Grows or shrinks smoothly as its content comes and goes, so the sheet
+/// doesn't jump when a message appears.
+class _AnimatedSlot extends StatelessWidget {
+  const _AnimatedSlot({required this.child});
+
+  final Widget? child;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOutCubic,
+      alignment: Alignment.topCenter,
+      child: child ?? const SizedBox.shrink(),
     );
   }
 }

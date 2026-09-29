@@ -8,6 +8,7 @@ import 'package:payment_approval/core/theme/app_theme.dart';
 import 'package:payment_approval/features/payments/domain/models/payment.dart';
 import 'package:payment_approval/features/payments/presentation/bloc/payments_bloc.dart';
 import 'package:payment_approval/features/payments/presentation/widgets/payments_load_failure_view.dart';
+import 'package:payment_approval/features/shared/widgets/labeled_value.dart';
 import 'package:payment_approval/features/shared/widgets/message_view.dart';
 import 'package:payment_approval/features/shared/widgets/recipient_avatar.dart';
 import 'package:payment_approval/features/shared/widgets/section_card.dart';
@@ -38,23 +39,28 @@ class PaymentDetailsPage extends StatelessWidget {
         leading: BackButton(onPressed: () => _goBack(context)),
         title: Text(l10n.paymentDetailsTitle),
       ),
-      body: BlocBuilder<PaymentsBloc, PaymentsState>(
-        builder: (context, state) => switch (state) {
-          PaymentsLoading() => const Center(child: CircularProgressIndicator()),
-          PaymentsLoadFailure() => const PaymentsLoadFailureView(),
-          // Only decided payments resolve. A pending request isn't a payment
-          // yet, so its id lands here as unavailable.
-          PaymentsLoaded(:final snapshot) => switch (snapshot.paymentById(paymentId)) {
-            final payment? => _PaymentDetails(payment: payment),
-            null => MessageView(
-              icon: Icons.lock_clock_outlined,
-              title: l10n.paymentUnavailableTitle,
-              message: l10n.paymentUnavailableMessage,
-              actionLabel: l10n.goToPayments,
-              onAction: () => context.goNamed(Routes.payments.name),
-            ),
+      // Keeps the content clear of a notch in landscape.
+      body: SafeArea(
+        top: false,
+        bottom: false,
+        child: BlocBuilder<PaymentsBloc, PaymentsState>(
+          builder: (context, state) => switch (state) {
+            PaymentsLoading() => const Center(child: CircularProgressIndicator()),
+            PaymentsLoadFailure() => const PaymentsLoadFailureView(),
+            // Only decided payments resolve. A pending request isn't a payment
+            // yet, so its id lands here as unavailable.
+            PaymentsLoaded(:final snapshot) => switch (snapshot.paymentById(paymentId)) {
+              final payment? => _PaymentDetails(payment: payment),
+              null => MessageView(
+                icon: Icons.lock_clock_outlined,
+                title: l10n.paymentUnavailableTitle,
+                message: l10n.paymentUnavailableMessage,
+                actionLabel: l10n.goToPayments,
+                onAction: () => context.goNamed(Routes.payments.name),
+              ),
+            },
           },
-        },
+        ),
       ),
     );
   }
@@ -93,11 +99,14 @@ class _PaymentDetails extends StatelessWidget {
         const SizedBox(height: 8),
         Center(child: StatusBadge(status: payment.status)),
         const SizedBox(height: 20),
-        Text(
-          formatMoney(payment.amount),
-          textAlign: TextAlign.center,
-          style: theme.textTheme.displaySmall?.tabular.copyWith(
-            color: isRejected ? theme.colorScheme.onSurfaceVariant : null,
+        // Large text shrinks the amount rather than breaking it across lines.
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            formatMoney(payment.amount),
+            style: theme.textTheme.displaySmall?.tabular.copyWith(
+              color: isRejected ? theme.colorScheme.onSurfaceVariant : null,
+            ),
           ),
         ),
         if (isRejected) ...[
@@ -146,23 +155,29 @@ class _DetailRow extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Padding(
-      padding: EdgeInsetsDirectional.fromSTEB(16, 14, trailing == null ? 16 : 4, 14),
-      child: Row(
-        children: [
-          Text(
-            label,
-            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              value,
-              textAlign: TextAlign.end,
-              style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+      // A trailing icon button's own padding lines its icon up with the values.
+      padding: EdgeInsetsDirectional.fromSTEB(16, 4, trailing == null ? 16 : 0, 4),
+      child: ConstrainedBox(
+        // As tall as an icon button, so rows with and without one match.
+        constraints: const BoxConstraints(minHeight: 48),
+        child: Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: LabeledValue(
+            label: label,
+            value: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(
+                    value,
+                    style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+                  ),
+                ),
+                ?trailing,
+              ],
             ),
           ),
-          ?trailing,
-        ],
+        ),
       ),
     );
   }

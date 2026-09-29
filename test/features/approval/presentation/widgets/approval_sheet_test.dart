@@ -52,6 +52,19 @@ void main() {
       expect(find.text(aed('••,•••.••')), findsOneWidget);
     });
 
+    testWidgets('moves a value under its label rather than breaking it when the text is large', (
+      tester,
+    ) async {
+      usePhoneScreen(tester, textScale: 2);
+      await pumpSheet(tester, const ApprovalIdle());
+
+      final label = tester.getRect(find.text('Reference'));
+      final value = tester.getRect(find.text('PAY-40117'));
+      expect(value.top, greaterThanOrEqualTo(label.bottom));
+      expect(value.left, label.left);
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('tells screen readers the values are hidden instead of reading bullets', (
       tester,
     ) async {

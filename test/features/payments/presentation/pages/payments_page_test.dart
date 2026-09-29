@@ -60,6 +60,31 @@ void main() {
       });
     });
 
+    testWidgets('keeps the amount beside the name at the default text size', (tester) async {
+      await withClock(Clock.fixed(tNow), () async {
+        usePhoneScreen(tester);
+        await pumpPayments(tester, tWireframeSnapshot);
+
+        final name = tester.getRect(find.text('Ahmed Khalil'));
+        final amount = tester.getRect(find.text(aed('1,200.00')));
+        expect(amount.top, lessThan(name.bottom));
+        expect(amount.left, greaterThan(name.right));
+      });
+    });
+
+    testWidgets('moves the amount under the name when the text is large', (tester) async {
+      await withClock(Clock.fixed(tNow), () async {
+        usePhoneScreen(tester, textScale: 2);
+        await pumpPayments(tester, tWireframeSnapshot);
+
+        final name = tester.getRect(find.text('Ahmed Khalil'));
+        final amount = tester.getRect(find.text(aed('1,200.00')));
+        expect(amount.top, greaterThan(name.bottom));
+        expect(amount.left, name.left);
+        expect(tester.takeException(), isNull);
+      });
+    });
+
     testWidgets('scrolls to and highlights a payment that was just decided', (tester) async {
       await withClock(Clock.fixed(tNow), () async {
         final history = PaymentsSnapshot(

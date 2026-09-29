@@ -1,5 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:payment_approval/core/theme/app_theme.dart';
@@ -35,6 +36,16 @@ Widget testApp({
   final withBloc = paymentsBloc == null ? app : BlocProvider.value(value: paymentsBloc, child: app);
 
   return presenter == null ? withBloc : RepositoryProvider.value(value: presenter, child: withBloc);
+}
+
+/// Renders on a phone-sized screen, optionally with the system text size raised.
+void usePhoneScreen(WidgetTester tester, {double textScale = 1}) {
+  tester.view
+    ..physicalSize = const Size(390, 844)
+    ..devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
+  tester.platformDispatcher.textScaleFactorTestValue = textScale;
+  addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 }
 
 /// Amounts are formatted with a non-breaking space after the currency code.

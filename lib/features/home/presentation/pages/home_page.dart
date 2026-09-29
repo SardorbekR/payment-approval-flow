@@ -30,12 +30,17 @@ class HomePage extends StatelessWidget {
         title: Text(l10n.homeTitle),
         titleTextStyle: Theme.of(context).textTheme.headlineSmall,
       ),
-      body: BlocBuilder<PaymentsBloc, PaymentsState>(
-        builder: (context, state) => switch (state) {
-          PaymentsLoading() => const Center(child: CircularProgressIndicator()),
-          PaymentsLoadFailure() => const PaymentsLoadFailureView(),
-          PaymentsLoaded(:final snapshot) => _HomeContent(snapshot: snapshot),
-        },
+      // Keeps the content clear of a notch in landscape.
+      body: SafeArea(
+        top: false,
+        bottom: false,
+        child: BlocBuilder<PaymentsBloc, PaymentsState>(
+          builder: (context, state) => switch (state) {
+            PaymentsLoading() => const Center(child: CircularProgressIndicator()),
+            PaymentsLoadFailure() => const PaymentsLoadFailureView(),
+            PaymentsLoaded(:final snapshot) => _HomeContent(snapshot: snapshot),
+          },
+        ),
       ),
     );
   }

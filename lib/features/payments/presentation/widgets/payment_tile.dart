@@ -20,6 +20,10 @@ class PaymentTile extends StatelessWidget {
   /// How long the tint for a just-decided payment takes to fade.
   static const highlightDuration = Duration(milliseconds: 2400);
 
+  /// The narrowest row that fits the name next to the amount at the default
+  /// text size. Larger text needs proportionally more room.
+  static const _minRowWidth = 260.0;
+
   final Payment payment;
   final VoidCallback onTap;
 
@@ -32,47 +36,65 @@ class PaymentTile extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final isRejected = payment.status == PaymentStatus.rejected;
 
+    final date = Text(
+      formatPaymentDate(payment.decidedAt, now: clock.now(), l10n: l10n),
+      style: theme.textTheme.bodySmall,
+    );
+    final amount = Text(
+      formatMoney(payment.amount),
+      style: theme.textTheme.titleMedium?.tabular.copyWith(
+        color: isRejected ? theme.colorScheme.onSurfaceVariant : null,
+      ),
+    );
+    final badge = StatusBadge(status: payment.status);
+
     final row = InkWell(
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14),
-        child: Row(
-          children: [
-            RecipientAvatar(name: payment.recipientName),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    payment.recipientName,
-                    style: theme.textTheme.titleMedium,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    formatPaymentDate(payment.decidedAt, now: clock.now(), l10n: l10n),
-                    style: theme.textTheme.bodySmall,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // With large text, the amount moves under the name instead of
+            // squeezing it into a sliver.
+            final stacked =
+                constraints.maxWidth < _minRowWidth * MediaQuery.textScalerOf(context).scale(1);
+
+            return Row(
+              crossAxisAlignment: stacked ? CrossAxisAlignment.start : CrossAxisAlignment.center,
               children: [
-                Text(
-                  formatMoney(payment.amount),
-                  style: theme.textTheme.titleMedium?.tabular.copyWith(
-                    color: isRejected ? theme.colorScheme.onSurfaceVariant : null,
+                RecipientAvatar(name: payment.recipientName),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        payment.recipientName,
+                        style: theme.textTheme.titleMedium,
+                        maxLines: stacked ? 2 : 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      date,
+                      if (stacked) ...[
+                        const SizedBox(height: 8),
+                        amount,
+                        const SizedBox(height: 4),
+                        badge,
+                      ],
+                    ],
                   ),
                 ),
-                const SizedBox(height: 4),
-                StatusBadge(status: payment.status),
+                if (!stacked) ...[
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [amount, const SizedBox(height: 4), badge],
+                  ),
+                ],
               ],
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
