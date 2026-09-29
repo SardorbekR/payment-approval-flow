@@ -80,6 +80,10 @@ class PaymentsRepository {
     }
   }
 
+  /// Whether [requestId] is still waiting for a decision.
+  bool isPending(String requestId) =>
+      _snapshot?.pendingRequests.any((request) => request.id == requestId) ?? false;
+
   Future<void> dispose() => _changes.close();
 
   PaymentsSnapshot _requireSnapshot() =>

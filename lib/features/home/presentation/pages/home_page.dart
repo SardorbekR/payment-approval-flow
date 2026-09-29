@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:payment_approval/features/home/presentation/widgets/monthly_summary_card.dart';
+import 'package:payment_approval/features/home/presentation/widgets/pending_requests_section.dart';
 import 'package:payment_approval/features/payments/domain/models/money.dart';
 import 'package:payment_approval/features/payments/domain/models/monthly_summary.dart';
 import 'package:payment_approval/features/payments/domain/models/payments_snapshot.dart';
@@ -59,6 +60,10 @@ class _HomeContent extends StatelessWidget {
         MonthlySummaryCard(
           summary: MonthlySummary.of(payments, now: clock.now(), currency: Currency.aed),
         ),
+
+        /// Requests closed without a decision
+        if (snapshot.pendingRequests.isNotEmpty)
+          PendingRequestsSection(requests: snapshot.pendingRequests),
 
         /// Recent payments
         SectionHeader(

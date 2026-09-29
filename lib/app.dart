@@ -1,27 +1,44 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:payment_approval/core/device_auth/device_authenticator.dart';
 import 'package:payment_approval/core/theme/app_theme.dart';
+import 'package:payment_approval/features/approval/presentation/approval_presenter.dart';
 import 'package:payment_approval/features/payments/data/repositories/payments_repository.dart';
 import 'package:payment_approval/features/payments/presentation/bloc/payments_bloc.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 import 'package:payment_approval/router.dart';
 
 class App extends StatefulWidget {
-  const App({required this.navigatorKey, required this.repository, super.key});
+  const App({
+    required this.navigatorKey,
+    required this.repository,
+    required this.authenticator,
+    super.key,
+  });
 
   final GlobalKey<NavigatorState> navigatorKey;
   final PaymentsRepository repository;
+  final DeviceAuthenticator authenticator;
 
   @override
   State<App> createState() => _AppState();
 }
 
 class _AppState extends State<App> {
+  final _messengerKey = GlobalKey<ScaffoldMessengerState>();
   late final GoRouter _router = createRouter(navigatorKey: widget.navigatorKey);
+  late final _presenter = ApprovalPresenter(
+    navigatorKey: widget.navigatorKey,
+    messengerKey: _messengerKey,
+    router: _router,
+    repository: widget.repository,
+    authenticator: widget.authenticator,
+  );
 
   @override
   void dispose() {
+    _presenter.dispose();
     _router.dispose();
     super.dispose();
   }
@@ -30,8 +47,11 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     const theme = AppTheme();
 
-    return RepositoryProvider.value(
-      value: widget.repository,
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider.value(value: widget.repository),
+        RepositoryProvider.value(value: _presenter),
+      ],
       child: BlocProvider(
         create: (_) => PaymentsBloc(repository: widget.repository)..add(const PaymentsStarted()),
         child: MaterialApp.router(
@@ -44,6 +64,7 @@ class _AppState extends State<App> {
             ...GlobalMaterialLocalizations.delegates,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
+          scaffoldMessengerKey: _messengerKey,
           routerConfig: _router,
         ),
       ),

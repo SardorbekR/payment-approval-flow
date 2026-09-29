@@ -13,9 +13,14 @@ import '../../../payments/payments_seed.dart';
 
 void main() {
   late MockPaymentsBloc bloc;
+  late MockApprovalPresenter presenter;
+
+  setUpAll(() => registerFallbackValue(tRequest()));
 
   setUp(() {
     bloc = MockPaymentsBloc();
+    presenter = MockApprovalPresenter();
+    when(() => presenter.review(any())).thenAnswer((_) async {});
   });
 
   Future<void> pumpHome(
@@ -25,7 +30,12 @@ void main() {
   }) async {
     whenListen(bloc, const Stream<PaymentsState>.empty(), initialState: state);
     await tester.pumpWidget(
-      testApp(child: const HomePage(), paymentsBloc: bloc, textDirection: textDirection),
+      testApp(
+        child: const HomePage(),
+        paymentsBloc: bloc,
+        presenter: presenter,
+        textDirection: textDirection,
+      ),
     );
   }
 
@@ -69,6 +79,39 @@ void main() {
         expect(find.text(aed('0.00')), findsOneWidget);
         expect(find.text('No payments yet'), findsOneWidget);
         expect(find.text('See all'), findsNothing);
+      });
+    });
+
+    testWidgets('lists requests waiting for approval without revealing their amounts', (
+      tester,
+    ) async {
+      await withClock(Clock.fixed(tNow), () async {
+        final pending = tRequest(reference: 'PAY-40117', maskedRecipient: 'A•••• K.');
+
+        await pumpHome(tester, PaymentsLoaded(tWireframeSnapshot.withPendingRequest(pending)));
+
+        expect(find.text('WAITING FOR YOUR APPROVAL'), findsOneWidget);
+        expect(find.text('A•••• K.'), findsOneWidget);
+        expect(find.text('Ref PAY-40117'), findsOneWidget);
+      });
+    });
+
+    testWidgets('reopens the approval sheet when a waiting request is tapped', (tester) async {
+      await withClock(Clock.fixed(tNow), () async {
+        final pending = tRequest(reference: 'PAY-40117');
+        await pumpHome(tester, PaymentsLoaded(tWireframeSnapshot.withPendingRequest(pending)));
+
+        await tester.tap(find.text('Ref PAY-40117'));
+
+        verify(() => presenter.review(pending)).called(1);
+      });
+    });
+
+    testWidgets('hides the waiting section when nothing is pending', (tester) async {
+      await withClock(Clock.fixed(tNow), () async {
+        await pumpHome(tester, PaymentsLoaded(tWireframeSnapshot));
+
+        expect(find.text('WAITING FOR YOUR APPROVAL'), findsNothing);
       });
     });
 
