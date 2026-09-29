@@ -1,25 +1,24 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:payment_approval/l10n/app_localizations.dart';
+import 'package:payment_approval/app.dart';
+import 'package:payment_approval/features/payments/data/data_sources/in_memory_payments_api.dart';
+import 'package:payment_approval/features/payments/data/repositories/payments_repository.dart';
 
-void main() => runApp(const _ScaffoldCheckApp());
+void main() {
+  LicenseRegistry.addLicense(_fontLicenses);
 
-class _ScaffoldCheckApp extends StatelessWidget {
-  const _ScaffoldCheckApp();
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        ...GlobalMaterialLocalizations.delegates,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: ThemeData(fontFamily: 'Inter'),
-      home: Builder(
-        builder: (context) =>
-            Scaffold(body: Center(child: Text(AppLocalizations.of(context).appTitle))),
+  runApp(
+    App(
+      navigatorKey: GlobalKey<NavigatorState>(),
+      repository: PaymentsRepository(
+        api: InMemoryPaymentsApi(latency: const Duration(milliseconds: 400)),
       ),
-    );
-  }
+    ),
+  );
+}
+
+Stream<LicenseEntry> _fontLicenses() async* {
+  final license = await rootBundle.loadString('assets/fonts/inter/OFL.txt');
+  yield LicenseEntryWithLineBreaks(const ['Inter'], license);
 }

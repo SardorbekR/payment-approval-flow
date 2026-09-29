@@ -1,6 +1,7 @@
 import 'package:payment_approval/features/payments/domain/models/money.dart';
 import 'package:payment_approval/features/payments/domain/models/payment.dart';
 import 'package:payment_approval/features/payments/domain/models/payment_request.dart';
+import 'package:payment_approval/features/payments/domain/models/payments_snapshot.dart';
 
 Payment tPayment({
   String id = 'pay_1',
@@ -65,3 +66,41 @@ Map<String, Object?> tRequestJson({
     'requested_at': requestedAt,
   };
 }
+
+/// Mirrors the wireframe in September 2026, plus one payment from August.
+final tWireframeSnapshot = PaymentsSnapshot(
+  payments: [
+    tPayment(
+      id: 'pay_ahmed',
+      reference: 'PAY-88213',
+      decidedAt: DateTime(2026, 9, 26, 10).toUtc(),
+      note: 'Design retainer',
+    ),
+    tPayment(
+      id: 'pay_sara',
+      reference: 'PAY-51027',
+      recipientName: 'Sara Mansour',
+      minorUnits: 34000,
+      decidedAt: DateTime(2026, 9, 18, 13).toUtc(),
+    ),
+    tPayment(
+      id: 'pay_leo',
+      reference: 'PAY-47390',
+      recipientName: 'Leo Dubois',
+      minorUnits: 90000,
+      status: PaymentStatus.rejected,
+      decidedAt: DateTime(2026, 9, 9, 16).toUtc(),
+    ),
+    tPayment(
+      id: 'pay_fatima',
+      reference: 'PAY-30958',
+      recipientName: 'Fatima Al Zahra',
+      minorUnits: 475000,
+      decidedAt: DateTime(2026, 8, 28, 10).toUtc(),
+    ),
+  ],
+  pendingRequests: const [],
+);
+
+/// "Now" for UI tests, so relative dates and the monthly summary are stable.
+final tNow = DateTime(2026, 9, 29, 12);
