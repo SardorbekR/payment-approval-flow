@@ -11,7 +11,7 @@ void main() {
   setUpAll(() => initializeDateFormatting('en'));
 
   // Newer CLDR data puts a narrow no-break space before AM and PM.
-  String plain(String text) => text.replaceAll(' ', ' ');
+  String plain(String text) => text.replaceAll('\u202F', ' ');
 
   String relative(DateTime instant, DateTime now) =>
       plain(formatPaymentDate(instant.toUtc(), now: now, l10n: l10n));

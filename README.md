@@ -8,12 +8,12 @@ A small Flutter feature built the way I would ship it inside a production bankin
 
 | | |
 |---|---|
-| **Web** | **[sardorbekr.github.io/payment-approval-flow](https://sardorbekr.github.io/payment-approval-flow/)**. Opens instantly on a laptop or a phone. |
+| **Web** | **[sardorbekr.github.io/payment-approval-flow](https://sardorbekr.github.io/payment-approval-flow/)**. Opens in any browser, on a laptop or a phone; nothing to install. |
 | **Android** | [Download the APK](https://github.com/SardorbekR/payment-approval-flow/releases/latest) (`arm64` fits most phones). It uses the real fingerprint, face or PIN prompt. |
 | **iOS** | Build from source, see [Running locally](#running-locally). |
 
 1. Tap the **+** button to receive a payment request. You can drag it anywhere, and it stays where you leave it.
-2. **Approve** or **Reject** it. Both ask you to confirm it's you. Browsers can't reach Face ID or fingerprint sensors, so the web build shows a clearly labelled simulated prompt that can also be cancelled or failed.
+2. **Approve** or **Reject** it. Both ask you to confirm it's you. Browsers can't reach Face ID or fingerprint sensors, so the web build shows a clearly labeled simulated prompt that can also be canceled or failed.
 3. Approving takes you to Payments with the new payment on top. Rejecting keeps you where you were.
 4. Close the sheet without deciding, and the request waits on Home until you come back to it.
 
@@ -32,7 +32,7 @@ A small Flutter feature built the way I would ship it inside a production bankin
 
 | Criterion | Where it happens |
 |---|---|
-| Home summarises this month | `MonthlySummary.of` sums approved payments within the local calendar month. |
+| Home summarizes this month | `MonthlySummary.of` sums approved payments within the local calendar month. |
 | Rejected payments don't count | Only approved payments are summed. The card says how many rejected ones were left out. |
 | Recent payments on Home | The latest three, with a way to see all. |
 | Payments list, most recent first | Sorted by decision time, then by id, so a request decided late still lands on top. Grouped by month. |
@@ -59,7 +59,7 @@ A small Flutter feature built the way I would ship it inside a production bankin
   - The amount mask is always `AED ••,•••.••`, so it doesn't hint at the size of the payment.
   - The name keeps only its initials and always uses four bullets, so its length stays hidden.
 - **Both decisions need device authentication.** A rejected payment shows its full name and amount afterwards, so an unauthenticated reject would reveal them. It also stops someone holding your phone from rejecting your payments.
-- **Authentication fails closed.** A failed match, a lockout, a device with no screen lock or an unexpected platform error blocks the decision with an explanation. A cancelled prompt changes nothing.
+- **Authentication fails closed.** A failed match, a lockout, a device with no screen lock or an unexpected platform error blocks the decision with an explanation. A canceled prompt changes nothing.
 - **Decisions finish cleanly.**
   - While authentication or submission is running, the sheet can't be closed: back and tap-outside are blocked, and dragging is off, because in Flutter a drag closes a bottom sheet without asking `PopScope`.
   - Extra taps are dropped with `droppable()`, and a retry authenticates again.
@@ -107,7 +107,8 @@ flowchart LR
     Details[PaymentDetailsPage]
     Fab[DebugFabOverlay]
     Presenter[ApprovalPresenter]
-    Sheet[ApprovalSheet + ApprovalBloc]
+    Sheet[ApprovalSheet]
+    Decision[ApprovalBloc]
     PB[PaymentsBloc]
   end
   subgraph Data
@@ -118,9 +119,11 @@ flowchart LR
 
   Fab --> Presenter
   Home -- review pending --> Presenter
-  Presenter --> Sheet
-  Sheet --> Auth
-  Sheet -- decide --> Repo
+  Presenter -- shows --> Sheet
+  Presenter -- owns --> Decision
+  Sheet -- taps --> Decision
+  Decision --> Auth
+  Decision -- decide --> Repo
   Repo -- JSON --> Api
   Repo -- PaymentsSnapshot --> PB
   PB --> Home & List & Details
@@ -161,7 +164,7 @@ lib/
 
 ## Testing
 
-188 tests: unit, bloc (`bloc_test`), widget, end-to-end flows through the whole app, and golden screenshots.
+189 tests: unit, bloc (`bloc_test`), widget, end-to-end flows through the whole app, and golden screenshots.
 
 ```sh
 flutter test                         # everything (goldens are recorded on macOS)
@@ -174,7 +177,7 @@ flutter test --exclude-tags golden   # what CI runs on Linux
 - rejecting in place;
 - closing the sheet and coming back to the request;
 - back and tap-outside being blocked while the prompt is open;
-- a cancelled prompt;
+- a canceled prompt;
 - a request decided elsewhere;
 - a sheet removed mid-decision;
 - a request that fails to arrive;
@@ -191,7 +194,7 @@ flutter run              # a connected device or simulator
 flutter run -d chrome    # web
 ```
 
-An Android emulator with no screen lock can't approve or reject; that is the fail-closed behaviour. Set a PIN in the emulator's settings to try it.
+An Android emulator with no screen lock can't approve or reject; that is the fail-closed behavior. Set a PIN in the emulator's settings to try it.
 
 ## Known limitations
 

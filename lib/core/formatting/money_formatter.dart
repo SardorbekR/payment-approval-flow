@@ -2,7 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:payment_approval/features/payments/domain/models/money.dart';
 
 // A non-breaking space keeps the currency code and the amount on one line.
-const _nbsp = ' ';
+const _nbsp = '\u00A0';
 
 final _groupedWholeUnits = NumberFormat.decimalPattern('en');
 

@@ -38,4 +38,4 @@ Widget testApp({
 }
 
 /// Amounts are formatted with a non-breaking space after the currency code.
-String aed(String amount) => 'AED $amount';
+String aed(String amount) => 'AED\u00A0$amount';

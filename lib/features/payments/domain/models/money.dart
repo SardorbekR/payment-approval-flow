@@ -11,7 +11,7 @@ enum Currency {
 
   final String code;
 
-  /// How many minor units make up the major unit's fraction: 2 for AED (fils).
+  /// Digits after the decimal point: 2 for AED, whose minor unit is the fils.
   final int minorUnitDigits;
 
   /// Throws a [FormatException] for any code the app doesn't support, so an

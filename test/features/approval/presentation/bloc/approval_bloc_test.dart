@@ -82,8 +82,8 @@ void main() {
     );
 
     blocTest<ApprovalBloc, ApprovalState>(
-      'goes back to idle without deciding when the prompt is cancelled',
-      setUp: () => authenticateWith(DeviceAuthResult.cancelled),
+      'goes back to idle without deciding when the prompt is canceled',
+      setUp: () => authenticateWith(DeviceAuthResult.canceled),
       build: buildBloc,
       act: (bloc) => bloc.add(approve),
       expect: () => [const ApprovalAuthenticating(PaymentStatus.approved), const ApprovalIdle()],

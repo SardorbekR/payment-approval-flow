@@ -3,7 +3,7 @@ import 'package:payment_approval/core/device_auth/device_authenticator.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 
 /// Browsers can't reach Face ID or fingerprint sensors, so the web build shows
-/// a clearly labelled dialog in place of the system prompt. It offers success,
+/// a clearly labeled dialog in place of the system prompt. It offers success,
 /// cancel and failure, so every path of the approval flow can be tried.
 class SimulatedDeviceAuthenticator implements DeviceAuthenticator {
   SimulatedDeviceAuthenticator({required GlobalKey<NavigatorState> navigatorKey})
@@ -23,7 +23,7 @@ class SimulatedDeviceAuthenticator implements DeviceAuthenticator {
     );
 
     // The dialog can also close without an answer, for example through the browser's back button.
-    return result ?? DeviceAuthResult.cancelled;
+    return result ?? DeviceAuthResult.canceled;
   }
 }
 
@@ -76,7 +76,7 @@ class SimulatedAuthDialog extends StatelessWidget {
           child: Text(l10n.simulatedAuthFail),
         ),
         TextButton(
-          onPressed: () => Navigator.pop(context, DeviceAuthResult.cancelled),
+          onPressed: () => Navigator.pop(context, DeviceAuthResult.canceled),
           child: Text(l10n.simulatedAuthCancel),
         ),
         FilledButton(

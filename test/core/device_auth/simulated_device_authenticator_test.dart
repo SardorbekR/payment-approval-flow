@@ -37,7 +37,7 @@ void main() {
 
     final answers = {
       'Authenticate': DeviceAuthResult.success,
-      'Cancel': DeviceAuthResult.cancelled,
+      'Cancel': DeviceAuthResult.canceled,
       'Fail': DeviceAuthResult.failed,
     };
 
@@ -54,7 +54,7 @@ void main() {
       });
     }
 
-    testWidgets('treats a prompt closed without an answer as cancelled', (tester) async {
+    testWidgets('treats a prompt closed without an answer as canceled', (tester) async {
       await pumpHost(tester);
       final result = authenticator.authenticate(reason: 'Confirm payment PAY-88213');
       await tester.pumpAndSettle();
@@ -62,7 +62,7 @@ void main() {
       navigatorKey.currentState!.pop();
       await tester.pumpAndSettle();
 
-      expect(await result, DeviceAuthResult.cancelled);
+      expect(await result, DeviceAuthResult.canceled);
     });
 
     testWidgets('reports unavailable before the app has a navigator', (tester) async {

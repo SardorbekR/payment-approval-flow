@@ -50,7 +50,7 @@ class ApprovalBloc extends Bloc<ApprovalEvent, ApprovalState> {
     switch (authResult) {
       case DeviceAuthResult.success:
         break;
-      case DeviceAuthResult.cancelled:
+      case DeviceAuthResult.canceled:
         emit(const ApprovalIdle());
         return;
       case DeviceAuthResult.failed:

@@ -22,7 +22,7 @@ class LocalDeviceAuthenticator implements DeviceAuthenticator {
         LocalAuthExceptionCode.userCanceled ||
         LocalAuthExceptionCode.systemCanceled ||
         LocalAuthExceptionCode.timeout ||
-        LocalAuthExceptionCode.userRequestedFallback => DeviceAuthResult.cancelled,
+        LocalAuthExceptionCode.userRequestedFallback => DeviceAuthResult.canceled,
         LocalAuthExceptionCode.noCredentialsSet ||
         LocalAuthExceptionCode.noBiometricsEnrolled ||
         LocalAuthExceptionCode.noBiometricHardware => DeviceAuthResult.unavailable,

@@ -50,10 +50,10 @@ void main() {
     });
 
     const expectations = {
-      LocalAuthExceptionCode.userCanceled: DeviceAuthResult.cancelled,
-      LocalAuthExceptionCode.systemCanceled: DeviceAuthResult.cancelled,
-      LocalAuthExceptionCode.timeout: DeviceAuthResult.cancelled,
-      LocalAuthExceptionCode.userRequestedFallback: DeviceAuthResult.cancelled,
+      LocalAuthExceptionCode.userCanceled: DeviceAuthResult.canceled,
+      LocalAuthExceptionCode.systemCanceled: DeviceAuthResult.canceled,
+      LocalAuthExceptionCode.timeout: DeviceAuthResult.canceled,
+      LocalAuthExceptionCode.userRequestedFallback: DeviceAuthResult.canceled,
       LocalAuthExceptionCode.noCredentialsSet: DeviceAuthResult.unavailable,
       LocalAuthExceptionCode.noBiometricsEnrolled: DeviceAuthResult.unavailable,
       LocalAuthExceptionCode.noBiometricHardware: DeviceAuthResult.unavailable,

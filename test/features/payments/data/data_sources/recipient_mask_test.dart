@@ -30,7 +30,7 @@ void main() {
     });
 
     test('keeps a letter written with a combining mark intact', () {
-      expect(maskRecipientName('Émile Zola'), 'É•••• Z.');
+      expect(maskRecipientName('E\u0301mile Zola'), 'E\u0301•••• Z.');
     });
 
     test('masks names written in non-Latin scripts', () {

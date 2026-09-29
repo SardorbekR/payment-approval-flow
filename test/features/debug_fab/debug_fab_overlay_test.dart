@@ -52,6 +52,21 @@ void main() {
       expect(fab().hitTestable(), findsOneWidget);
     });
 
+    testWidgets('is announced to screen readers as a labeled button', (tester) async {
+      final semantics = tester.ensureSemantics();
+      await pumpOverlay(tester, state: PaymentsLoaded(tWireframeSnapshot));
+
+      expect(
+        tester.getSemantics(find.bySemanticsLabel('Simulate an incoming payment request')),
+        isSemantics(
+          label: 'Simulate an incoming payment request',
+          isButton: true,
+          hasTapAction: true,
+        ),
+      );
+      semantics.dispose();
+    });
+
     testWidgets('stays hidden until payments have loaded', (tester) async {
       await pumpOverlay(tester);
 

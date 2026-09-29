@@ -3,7 +3,7 @@ enum DeviceAuthResult {
   success,
 
   /// The user dismissed the prompt, or the system interrupted it.
-  cancelled,
+  canceled,
 
   /// The face, fingerprint or passcode didn't match.
   failed,

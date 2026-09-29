@@ -123,7 +123,8 @@ class InMemoryPaymentsApi implements PaymentsApi {
     return dirhams * 100 + fils;
   }
 
-  // Built from 4-bit chunks: bit shifts past 32 bits misbehave on the web.
+  // One hex digit at a time: Random.nextInt is capped at 2^32 and bitwise
+  // operations are 32-bit on the web, so a single large draw isn't portable.
   String _randomHex(int length) =>
       List.generate(length, (_) => _random.nextInt(16).toRadixString(16)).join();
 
