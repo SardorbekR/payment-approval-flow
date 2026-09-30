@@ -2,8 +2,6 @@
 
 A small Flutter feature built the way I would ship it inside a production banking app: an incoming payment request appears over whatever you are doing, you approve or reject it with device authentication, and the result shows up everywhere at once.
 
-[![CI](https://github.com/SardorbekR/payment-approval-flow/actions/workflows/ci.yml/badge.svg)](https://github.com/SardorbekR/payment-approval-flow/actions/workflows/ci.yml)
-
 ## Try it
 
 | | |
@@ -99,6 +97,8 @@ full payment JSON                ──►       Payment { recipient_name, amoun
 
 ## Architecture
 
+Clean architecture, Presentation → Domain → Data, without use cases and entities: at this size they would only add layers that pass calls through.
+
 ```mermaid
 flowchart LR
   subgraph Presentation
@@ -160,6 +160,7 @@ lib/
 
 - **Latest stable Flutter (3.47.5) and packages.** Material comes from `material_ui`, Flutter's Material library now published on its own, which go_router 18 is built on.
 - **Tabs are one page deep and details sits above them.** This matches the wireframe, where details has no tab bar, and keeps back navigation predictable.
+- **Dependencies are passed in, not looked up.** `main.dart` builds the repository and the authenticator and hands them to `App`, which exposes them with `RepositoryProvider`. There is no service locator, so every dependency is visible, and tests pass fakes straight to `App`.
 - **No code generation.** freezed, json_serializable, injectable and mockito's generated mocks are all left out. The models are small, so hand-written code stays short and easy to review. mocktail and plain fakes cover the tests.
 - **Classic constructors.** Dart 3.13's new primary constructors are only weeks old. I kept the classic syntax and turned off the lint rules that push the new one, with a note in `analysis_options.yaml`.
 - **An in-memory server rather than mocks in the UI.** Latency, masking and error cases live in one place and behave like a backend would.
@@ -167,11 +168,11 @@ lib/
 
 ## Testing
 
-200 tests: unit, bloc (`bloc_test`), widget, end-to-end flows through the whole app, and golden screenshots.
+200 tests: unit, bloc (`bloc_test`), widget, end-to-end flows through the whole app, and golden screenshots. Line coverage is 97.8%, counting everything except `main.dart` and the generated localizations.
 
 ```sh
 flutter test                         # everything (goldens are recorded on macOS)
-flutter test --exclude-tags golden   # what CI runs on Linux
+flutter test --exclude-tags golden   # skips goldens, for Linux or Windows
 ```
 
 `test/app_flow_test.dart` drives the real app, router, repository and in-memory server, with only device authentication faked. It covers:
