@@ -32,6 +32,9 @@ dev_dependencies:
   mocktail: ^1.0.5
 
 flutter:
+  # Enables the web build for this project without changing global Flutter settings
+  config:
+    enable-web: true
   generate: true
   uses-material-design: true
 
