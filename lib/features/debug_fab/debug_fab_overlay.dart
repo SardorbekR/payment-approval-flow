@@ -109,7 +109,10 @@ class _DebugFab extends StatelessWidget {
             dragStartBehavior: DragStartBehavior.down,
             onPanStart: (_) => onDragStart(),
             onPanUpdate: (details) => onDrag(details.delta),
+            excludeFromSemantics: true,
             child: Semantics(
+              // Its own node, or it would merge into the full screen node above the Navigator
+              container: true,
               button: true,
               label: label,
               child: Material(

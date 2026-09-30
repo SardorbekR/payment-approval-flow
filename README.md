@@ -168,7 +168,7 @@ lib/
 
 ## Testing
 
-200 tests: unit, bloc (`bloc_test`), widget, end-to-end flows through the whole app, and golden screenshots. Line coverage is 97.8%, counting everything except `main.dart` and the generated localizations.
+201 tests: unit, bloc (`bloc_test`), widget, end-to-end flows through the whole app, and golden screenshots. Line coverage is 97.8%, counting everything except `main.dart` and the generated localizations.
 
 ```sh
 flutter test                         # everything (goldens are recorded on macOS)

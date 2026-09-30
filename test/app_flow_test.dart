@@ -10,6 +10,7 @@ import 'package:payment_approval/core/device_auth/device_authenticator.dart';
 import 'package:payment_approval/core/formatting/money_formatter.dart';
 import 'package:payment_approval/features/approval/presentation/approval_presenter.dart';
 import 'package:payment_approval/features/approval/presentation/widgets/approval_sheet.dart';
+import 'package:payment_approval/features/debug_fab/fab_position.dart';
 import 'package:payment_approval/features/home/presentation/pages/home_page.dart';
 import 'package:payment_approval/features/payments/data/data_sources/in_memory_payments_data_source.dart';
 import 'package:payment_approval/features/payments/domain/models/money.dart';
@@ -339,6 +340,19 @@ void main() {
       await decide(tester, 'Reject');
       expect(snackBar().overlaps(button()), isFalse);
     });
+  });
+
+  testWidgets('screen readers find the debug button as a button of its own size', (tester) async {
+    final semantics = tester.ensureSemantics();
+    await withClock(Clock.fixed(now), () async {
+      await pumpApp(tester);
+
+      final button = tester.getSemantics(
+        find.bySemanticsLabel('Simulate an incoming payment request'),
+      );
+      expect(button.rect.size, const Size.square(fabSize));
+    });
+    semantics.dispose();
   });
 
   testWidgets('asking for two requests at once opens a single sheet', (tester) async {
