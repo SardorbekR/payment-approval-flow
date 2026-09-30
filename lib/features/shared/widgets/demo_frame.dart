@@ -84,10 +84,19 @@ class _Phone extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    const rim = 3.0;
+
     return Container(
-      padding: EdgeInsets.all(bezel),
+      // The rim is part of the bezel, so the phone keeps its size
+      padding: EdgeInsets.all(bezel - rim),
       decoration: BoxDecoration(
         color: const Color(0xFF0B0F14),
+        // A metal edge, so the phone stands out on a dark page too
+        border: Border.all(
+          color: isLight ? const Color(0xFF2E343C) : const Color(0xFF3F4652),
+          width: rim,
+        ),
         borderRadius: BorderRadius.circular(56),
         boxShadow: const [
           BoxShadow(color: Color(0x33000000), blurRadius: 48, offset: Offset(0, 24)),
