@@ -30,7 +30,7 @@ class HomePage extends StatelessWidget {
         title: Text(l10n.homeTitle),
         titleTextStyle: Theme.of(context).textTheme.headlineSmall,
       ),
-      // Keeps the content clear of a notch in landscape
+      // Clears the notch in landscape
       body: SafeArea(
         top: false,
         bottom: false,

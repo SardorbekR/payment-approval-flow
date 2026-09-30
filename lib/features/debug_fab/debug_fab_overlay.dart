@@ -7,10 +7,6 @@ import 'package:payment_approval/features/debug_fab/fab_position.dart';
 import 'package:payment_approval/features/payments/presentation/bloc/payments_bloc.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 
-/// Debug button that simulates an incoming payment request
-///
-/// It sits above the router, so it floats over every screen and stays where it was dragged. It
-/// hides while a request is on screen
 class DebugFabOverlay extends StatefulWidget {
   const DebugFabOverlay({required this.presenter, required this.child, super.key});
 
@@ -58,7 +54,7 @@ class _DebugFabOverlayState extends State<DebugFabOverlay> {
                   visible: isLoaded && !isBusy,
                   size: fabSize,
                   onTap: widget.presenter.simulateIncomingRequest,
-                  // Start from the shown position, which may have been clamped after a resize
+                  // The shown position may have been clamped after a resize
                   onDragStart: () => _position = position,
                   // Several moves can arrive in one frame, so each builds on the latest position
                   onDrag: (delta) => setState(() {
@@ -107,11 +103,9 @@ class _DebugFab extends StatelessWidget {
           scale: visible ? 1 : 0,
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOutBack,
-          // A plain GestureDetector, because Draggable and Tooltip need an Overlay and this sits
-          // above the Navigator
+          // Draggable and Tooltip need an Overlay, which doesn't exist above the Navigator
           child: GestureDetector(
-            // Includes the movement before the drag was recognized, so the button stays under the
-            // finger
+            // Keeps the button under the finger from the first touch
             dragStartBehavior: DragStartBehavior.down,
             onPanStart: (_) => onDragStart(),
             onPanUpdate: (details) => onDrag(details.delta),

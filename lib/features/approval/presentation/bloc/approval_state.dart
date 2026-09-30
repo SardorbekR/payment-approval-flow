@@ -11,7 +11,6 @@ enum ApprovalErrorReason {
 sealed class ApprovalState extends Equatable {
   const ApprovalState();
 
-  /// While true, the sheet can't be closed and both decisions are disabled
   bool get isBusy => false;
 
   @override
@@ -46,7 +45,6 @@ class ApprovalSubmitting extends ApprovalState {
   List<Object?> get props => [decision];
 }
 
-/// The decision was recorded. The sheet closes with [payment]
 class ApprovalSuccess extends ApprovalState {
   const ApprovalSuccess(this.payment);
 

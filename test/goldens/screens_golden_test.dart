@@ -13,8 +13,7 @@ import 'package:payment_approval/features/payments/domain/repositories/payments_
 
 import '../helpers/fakes.dart';
 
-/// Whole app screenshots, also used in the README. Text renders slightly differently on each OS, so
-/// they run on macOS only
+/// Also used in the README. Fonts render differently per OS, so macOS only
 void main() {
   final now = DateTime(2026, 9, 29, 12);
 

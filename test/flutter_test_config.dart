@@ -4,8 +4,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Loads the app's real fonts, so golden images show Inter and Material icons instead of the
-/// placeholder test font
+/// Loads the real fonts, so goldens don't use the test font
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   await _loadAppFonts();

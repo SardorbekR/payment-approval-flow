@@ -1,7 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
-/// A label with its value at the end of the line. When both don't fit, as with large text, the
-/// value moves to its own line instead of breaking mid-word
+/// The value moves under the label when both don't fit, as with large text
 class LabeledValue extends StatelessWidget {
   const LabeledValue({required this.label, required this.value, super.key});
 

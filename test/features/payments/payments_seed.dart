@@ -102,5 +102,5 @@ final tWireframeSnapshot = PaymentsSnapshot(
   pendingRequests: const [],
 );
 
-/// "Now" for UI tests, so relative dates and the monthly summary are stable
+/// Fixed, so relative dates and the summary are stable
 final tNow = DateTime(2026, 9, 29, 12);

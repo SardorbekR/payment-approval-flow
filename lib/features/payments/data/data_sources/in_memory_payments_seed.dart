@@ -29,11 +29,7 @@ const _paymentNotes = [
   'Cloud hosting',
 ];
 
-/// Payments the demo starts with
-///
-/// The first three mirror the wireframe. They fall in the part of this month that has already
-/// passed, so Home never opens on an empty summary, even on the 1st. Fixed ids keep details links
-/// working after a page refresh
+/// Spread over the days of this month that have passed, so Home is never empty, even on the 1st
 List<_PaymentRecord> _seedRecords(DateTime now) {
   final localNow = now.toLocal();
   final monthStart = DateTime(localNow.year, localNow.month);

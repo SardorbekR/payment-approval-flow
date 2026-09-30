@@ -1,7 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
-/// Initials on a tinted circle. The tint comes from the name, so the same recipient always gets the
-/// same color
+/// The color comes from the name, so a recipient always gets the same one
 class RecipientAvatar extends StatelessWidget {
   const RecipientAvatar({required this.name, this.size = 40, super.key});
 

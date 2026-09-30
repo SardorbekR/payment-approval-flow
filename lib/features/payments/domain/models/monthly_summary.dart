@@ -2,10 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:payment_approval/features/payments/domain/models/money.dart';
 import 'package:payment_approval/features/payments/domain/models/payment.dart';
 
-/// Money that actually moved this calendar month
-///
-/// Only approved payments count toward [total] and [approvedCount]. Rejected ones moved no money
-/// and only count in [rejectedCount]
+/// Only approved payments count toward the total. Rejected ones moved no money
 class MonthlySummary extends Equatable {
   const MonthlySummary({
     required this.total,
@@ -13,8 +10,6 @@ class MonthlySummary extends Equatable {
     required this.rejectedCount,
   });
 
-  /// The month follows the local calendar and `decidedAt` is an absolute instant, so this works in
-  /// any time zone
   factory MonthlySummary.of(
     Iterable<Payment> payments, {
     required DateTime now,
@@ -34,7 +29,6 @@ class MonthlySummary extends Equatable {
 
       switch (payment.status) {
         case PaymentStatus.approved:
-          // Amounts are never converted between currencies
           if (payment.amount.currency != currency) {
             throw ArgumentError.value(payment.amount, 'payments', 'Expected ${currency.code} only');
           }

@@ -125,6 +125,5 @@ class AppTheme {
 }
 
 extension TabularFigures on TextStyle {
-  /// Equal width digits, so amounts line up
   TextStyle get tabular => copyWith(fontFeatures: const [FontFeature.tabularFigures()]);
 }

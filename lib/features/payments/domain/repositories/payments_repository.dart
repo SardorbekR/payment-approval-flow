@@ -5,21 +5,17 @@ import 'package:payment_approval/features/payments/domain/models/payment_request
 import 'package:payment_approval/features/payments/domain/models/payments_snapshot.dart';
 import 'package:rxdart/rxdart.dart';
 
-/// Single source of truth for payments on this device
-///
-/// Every change is published as a whole [PaymentsSnapshot], so all screens always agree
+/// Single source of truth for payments
 class PaymentsRepository {
   PaymentsRepository({required PaymentsDataSource dataSource}) : _dataSource = dataSource;
 
   final PaymentsDataSource _dataSource;
   final _snapshots = BehaviorSubject<PaymentsSnapshot>();
 
-  /// The latest snapshot for each new listener, then every change. Emits nothing before [load]
-  /// succeeds
+  /// The latest snapshot first, then every change
   Stream<PaymentsSnapshot> watch() => _snapshots.stream;
 
-  /// Fetches and publishes the server state. Throws if a request fails or an item is malformed, so
-  /// a partial list is never shown
+  /// Throws on any malformed item, so a partial list is never shown
   Future<void> load() async {
     final [paymentsJson, requestsJson] = await Future.wait([
       _dataSource.fetchPayments(),
@@ -34,7 +30,6 @@ class PaymentsRepository {
     );
   }
 
-  /// Asks the server for a new incoming request and adds it to the pending ones
   Future<PaymentRequest> createDebugRequest() async {
     _requireSnapshot();
     final request = paymentRequestFromJson(await _dataSource.createDebugRequest());
@@ -43,11 +38,7 @@ class PaymentsRepository {
     return request;
   }
 
-  /// Submits [decision] and returns the full payment from the server
-  ///
-  /// The request leaves the pending list and the payment joins the list in one snapshot. If the
-  /// submission fails, the server may still have recorded it, or the request was decided elsewhere,
-  /// so it reloads before rethrowing and every screen shows the real state
+  /// On failure it reloads first, since the server may have recorded the decision anyway
   Future<Payment> decide(PaymentRequest request, PaymentStatus decision) async {
     _requireSnapshot();
     try {
@@ -78,8 +69,7 @@ class PaymentsRepository {
 
   Future<void> dispose() => _snapshots.close();
 
-  /// Reloads from the server. If that fails too, at least drop [orDrop], a request the server no
-  /// longer has
+  /// If the reload fails too, at least drop [orDrop], which the server no longer has
   Future<void> _catchUpWithServer({String? orDrop}) async {
     try {
       await load();

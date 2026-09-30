@@ -1,10 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:payment_approval/features/payments/domain/models/money.dart';
 
-/// A payment waiting for the user's decision
-///
-/// It has no amount and no full name on purpose. The full payment only comes back from the decision
-/// call, after device authentication, so a pending request has nothing sensitive to leak
+/// Has no amount and no full name until the user authenticates
 class PaymentRequest extends Equatable {
   const PaymentRequest({
     required this.id,
@@ -14,15 +11,10 @@ class PaymentRequest extends Equatable {
     required this.requestedAt,
   });
 
-  /// Becomes the payment's id once the request is decided
   final String id;
   final String reference;
-
-  /// Recipient name as masked by the server, for example `A•••• K.`
   final String maskedRecipient;
   final Currency currency;
-
-  /// When the request came in, as a UTC instant
   final DateTime requestedAt;
 
   @override

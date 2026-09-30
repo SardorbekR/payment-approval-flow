@@ -16,16 +16,13 @@ class PaymentTile extends StatelessWidget {
     super.key,
   });
 
-  /// How long the highlight takes to fade
   static const highlightDuration = Duration(milliseconds: 2400);
 
-  /// Narrowest row that fits the name beside the amount at normal text size. Larger text needs more
+  /// Narrowest row that fits the name beside the amount at normal text size
   static const _minRowWidth = 260.0;
 
   final Payment payment;
   final VoidCallback onTap;
-
-  /// Briefly tints the row of a payment that was just decided
   final bool highlighted;
 
   @override
@@ -102,8 +99,7 @@ class PaymentTile extends StatelessWidget {
   }
 }
 
-/// Fades the tint out over a couple of seconds. It only animates while visible, so a payment
-/// approved from another tab still gets noticed
+/// Only animates while visible, so a payment approved from another tab still gets noticed
 class _FadingHighlight extends StatelessWidget {
   const _FadingHighlight({required this.child});
 

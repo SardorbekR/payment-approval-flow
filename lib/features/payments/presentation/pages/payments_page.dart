@@ -33,7 +33,6 @@ class _PaymentsPageState extends State<PaymentsPage> {
     super.dispose();
   }
 
-  /// A new payment on top means the user just decided it
   bool _hasNewTopPayment(PaymentsState previous, PaymentsState current) {
     if (previous is! PaymentsLoaded || current is! PaymentsLoaded) return false;
 
@@ -42,13 +41,11 @@ class _PaymentsPageState extends State<PaymentsPage> {
     return top != null && previous.snapshot.paymentById(top.id) == null;
   }
 
-  /// The tab keeps its scroll position, so a new payment could be off screen. Scroll to the top and
-  /// highlight it
+  /// The tab keeps its scroll position, so scroll back to the new payment
   void _revealTopPayment(BuildContext context, PaymentsState state) {
     final top = (state as PaymentsLoaded).snapshot.payments.first;
     setState(() => _highlightedPaymentId = top.id);
-    // Rows rebuilt after scrolling back would replay the tint, so forget the highlight once it
-    // fades
+    // Otherwise rows rebuilt after scrolling back would replay the tint
     _highlightTimer?.cancel();
     _highlightTimer = Timer(PaymentTile.highlightDuration, () {
       if (mounted) setState(() => _highlightedPaymentId = null);
@@ -76,7 +73,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
         title: Text(l10n.paymentsTitle),
         titleTextStyle: Theme.of(context).textTheme.headlineSmall,
       ),
-      // Keeps the content clear of a notch in landscape
+      // Clears the notch in landscape
       body: SafeArea(
         top: false,
         bottom: false,
@@ -105,7 +102,6 @@ class _PaymentsPageState extends State<PaymentsPage> {
   }
 }
 
-/// Payments grouped by the month they were decided in, most recent first
 class _PaymentsList extends StatelessWidget {
   const _PaymentsList({
     required this.payments,

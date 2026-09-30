@@ -21,8 +21,7 @@ import 'package:payment_approval/features/payments/presentation/widgets/payment_
 import 'helpers/fakes.dart';
 import 'helpers/test_app.dart';
 
-/// The whole app end to end with the real router, repository, in-memory server and presenter. Only
-/// device authentication is faked
+/// The real app end to end. Only device authentication is faked
 void main() {
   final now = DateTime(2026, 9, 29, 12);
   late InMemoryPaymentsDataSource api;
@@ -213,8 +212,7 @@ void main() {
       await tester.pump();
       await tester.binding.handlePopRoute();
       await tester.tapAt(const Offset(20, 40));
-      // The spinner keeps animating while the prompt is open, so pump a fixed time instead of
-      // settling
+      // The spinner never settles, so pump a fixed time
       await tester.pump(const Duration(seconds: 1));
       expect(find.byType(ApprovalSheet), findsOneWidget);
       expect(find.text('Waiting for device authentication…'), findsOneWidget);
@@ -236,8 +234,7 @@ void main() {
       await tester.tap(find.text('Approve'));
       await tester.pump();
 
-      // Like the browser's back button, which removes the page under the sheet and the sheet with
-      // it
+      // Like the browser's back button
       GoRouter.of(tester.element(find.byType(PaymentDetailsPage))).go('/home');
       await tester.pumpAndSettle();
       expect(find.byType(ApprovalSheet), findsNothing);

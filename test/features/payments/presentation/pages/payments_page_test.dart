@@ -120,8 +120,7 @@ void main() {
         expect(position.pixels, 0);
         expect(newTile().highlighted, isTrue);
 
-        // Once the tint has faded the highlight is forgotten, so scrolling the row away and back
-        // doesn't replay it
+        // Once faded, scrolling away and back doesn't replay the tint
         await tester.pump(PaymentTile.highlightDuration);
         expect(newTile().highlighted, isFalse);
       });

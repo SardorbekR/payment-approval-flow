@@ -7,13 +7,11 @@ import 'package:payment_approval/features/payments/domain/repositories/payments_
 part 'payments_event.dart';
 part 'payments_state.dart';
 
-/// Keeps every payment screen in sync with the repository. One instance lives above the router, so
-/// all screens agree
 class PaymentsBloc extends Bloc<PaymentsEvent, PaymentsState> {
   PaymentsBloc({required PaymentsRepository repository})
     : _repository = repository,
       super(const PaymentsInitial()) {
-    // A retry cancels the previous subscription instead of adding a second one
+    // A retry replaces the previous subscription
     on<LoadPayments>(_loadPayments, transformer: restartable());
   }
 

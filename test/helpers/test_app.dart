@@ -12,7 +12,6 @@ class MockPaymentsBloc extends MockBloc<PaymentsEvent, PaymentsState> implements
 
 class MockApprovalPresenter extends Mock implements ApprovalPresenter {}
 
-/// Wraps a page like the app does, with the theme, localizations and shared bloc
 Widget testApp({
   required Widget child,
   PaymentsBloc? paymentsBloc,
@@ -38,7 +37,6 @@ Widget testApp({
   return presenter == null ? withBloc : RepositoryProvider.value(value: presenter, child: withBloc);
 }
 
-/// Uses a phone sized screen, with an optional larger text size
 void usePhoneScreen(WidgetTester tester, {double textScale = 1}) {
   tester.view
     ..physicalSize = const Size(390, 844)

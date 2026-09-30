@@ -8,8 +8,6 @@ import 'package:payment_approval/features/payments/domain/models/payment_request
 import 'package:payment_approval/features/shared/widgets/labeled_value.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 
-/// Asks the user to approve or reject a request without showing who it pays or how much. Closes
-/// with the decided [Payment]
 class ApprovalSheet extends StatelessWidget {
   const ApprovalSheet({required this.request, super.key});
 
@@ -52,7 +50,7 @@ class ApprovalSheet extends StatelessWidget {
         return PopScope(
           // Closing mid-decision would hide whether the decision went through
           canPop: !isBusy,
-          // Keeps the buttons above the home indicator, which the sheet's own safe area leaves out
+          // Keeps the buttons above the home indicator
           child: SafeArea(
             top: false,
             child: SingleChildScrollView(
@@ -207,7 +205,7 @@ class _RequestRow extends StatelessWidget {
   final String label;
   final String value;
 
-  /// Set for masked values, so screen readers don't read out a row of bullets
+  /// Set for masked values, so screen readers don't read out bullets
   final String? semanticsLabel;
 
   @override
@@ -289,7 +287,6 @@ class _ErrorMessage extends StatelessWidget {
   }
 }
 
-/// Animates its height, so the sheet doesn't jump when a message appears
 class _AnimatedSlot extends StatelessWidget {
   const _AnimatedSlot({required this.child});
 
@@ -309,7 +306,7 @@ class _AnimatedSlot extends StatelessWidget {
 class _ButtonSpinner extends StatelessWidget {
   const _ButtonSpinner({required this.label});
 
-  /// Keeps the button named for screen readers while the spinner replaces its text
+  /// Read by screen readers while the spinner replaces the text
   final String label;
 
   @override

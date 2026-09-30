@@ -2,8 +2,6 @@ import 'package:material_ui/material_ui.dart';
 import 'package:payment_approval/core/device_auth/device_authenticator.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 
-/// Browsers can't use Face ID or fingerprint, so the web build shows a labeled dialog instead of
-/// the system prompt. It offers success, cancel and failure, so every path can be tried
 class SimulatedDeviceAuthenticator implements DeviceAuthenticator {
   const SimulatedDeviceAuthenticator({required GlobalKey<NavigatorState> navigatorKey})
     : _navigatorKey = navigatorKey;
@@ -21,7 +19,7 @@ class SimulatedDeviceAuthenticator implements DeviceAuthenticator {
       builder: (_) => SimulatedAuthDialog(reason: reason),
     );
 
-    // The dialog can also close without an answer, for example with the browser's back button
+    // Closed without an answer, for example with the browser's back button
     return result ?? DeviceAuthResult.canceled;
   }
 }
@@ -38,7 +36,6 @@ class SimulatedAuthDialog extends StatelessWidget {
     const buttonSize = Size(64, 44);
 
     return AlertDialog(
-      // Scrolls instead of overflowing with large text on a small screen
       scrollable: true,
       icon: Icon(Icons.fingerprint_rounded, size: 44, color: theme.colorScheme.secondary),
       title: Text(l10n.simulatedAuthTitle),
@@ -71,7 +68,7 @@ class SimulatedAuthDialog extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          // Stacked like a system prompt, since three buttons don't fit side by side on a phone
+          // Three buttons don't fit side by side on a phone
           FilledButton(
             onPressed: () => Navigator.pop(context, DeviceAuthResult.success),
             style: FilledButton.styleFrom(minimumSize: buttonSize),

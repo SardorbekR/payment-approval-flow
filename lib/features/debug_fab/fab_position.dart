@@ -2,18 +2,10 @@ import 'dart:math';
 
 import 'package:material_ui/material_ui.dart';
 
-/// Standard floating action button size
 const fabSize = 56.0;
-
-/// The gap the button keeps from the navigation bar and the screen edge
 const fabMargin = 16.0;
-
-/// Height of the Material navigation bar
 const _navigationBarHeight = 80.0;
 
-/// Where the button starts: the standard FAB spot above the navigation bar, at the bottom right
-/// (bottom left in right to left languages). Tab screens show snackbars above this spot, so the
-/// button never covers them
 Offset defaultFabPosition({
   required Size screen,
   required EdgeInsets safeArea,
@@ -28,7 +20,6 @@ Offset defaultFabPosition({
   return Offset(x, screen.height - safeArea.bottom - _navigationBarHeight - fabMargin - size);
 }
 
-/// Keeps the button on screen and clear of the status bar, notch and home indicator
 Offset clampFabPosition(
   Offset position, {
   required Size screen,

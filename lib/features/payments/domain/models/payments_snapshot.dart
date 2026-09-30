@@ -2,8 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:payment_approval/features/payments/domain/models/payment.dart';
 import 'package:payment_approval/features/payments/domain/models/payment_request.dart';
 
-/// Everything the payment screens show, as one value. A decision moves a request into the payments
-/// list in a single update, so no screen sees it missing from both
+/// Both lists in one value, so a decision moves a request into the payments in one update
 class PaymentsSnapshot extends Equatable {
   PaymentsSnapshot({
     required Iterable<Payment> payments,
@@ -11,10 +10,10 @@ class PaymentsSnapshot extends Equatable {
   }) : payments = List.unmodifiable(payments.toList()..sort(_latestDecisionFirst)),
        pendingRequests = List.unmodifiable(pendingRequests.toList()..sort(_latestRequestFirst));
 
-  /// Decided payments, most recent decision first
+  /// Most recent decision first
   final List<Payment> payments;
 
-  /// Requests still waiting for a decision, newest first
+  /// Newest first
   final List<PaymentRequest> pendingRequests;
 
   Payment? paymentById(String id) => payments.where((payment) => payment.id == id).firstOrNull;
@@ -24,7 +23,6 @@ class PaymentsSnapshot extends Equatable {
     pendingRequests: [..._requestsExcept(request.id), request],
   );
 
-  /// The decided payment replaces the pending request it came from
   PaymentsSnapshot withDecidedPayment(Payment payment) => PaymentsSnapshot(
     payments: [...payments.where((existing) => existing.id != payment.id), payment],
     pendingRequests: _requestsExcept(payment.id),

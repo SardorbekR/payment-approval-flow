@@ -11,10 +11,7 @@ import 'package:payment_approval/features/payments/domain/repositories/payments_
 import 'package:payment_approval/l10n/app_localizations.dart';
 import 'package:payment_approval/router.dart';
 
-/// Opens the approval sheet over any screen and handles what happens after the decision
-///
-/// The debug button and the pending rows on Home both go through it, so only one sheet is ever
-/// open. The debug button hides while [isBusy] is true
+/// Shows the approval sheet over any screen, one at a time, and handles the result
 class ApprovalPresenter {
   ApprovalPresenter({
     required GlobalKey<NavigatorState> navigatorKey,
@@ -31,16 +28,13 @@ class ApprovalPresenter {
 
   ValueListenable<bool> get isBusy => _isBusy;
 
-  /// Asks the server for a new request and shows it over the current screen
   Future<void> simulateIncomingRequest() => _present(_repository.createDebugRequest);
 
-  /// Shows a request that is still waiting for a decision
   Future<void> review(PaymentRequest request) => _present(() async => request);
 
   void dispose() => _isBusy.dispose();
 
-  // The debug button sits above the Navigator and has no context of its own for sheets,
-  // snackbars and navigation, so the presenter borrows the Navigator's
+  // The debug button sits above the Navigator, so borrow the Navigator's context
   BuildContext? get _context => _navigatorKey.currentContext;
 
   Future<void> _present(Future<PaymentRequest> Function() obtainRequest) async {
@@ -77,13 +71,11 @@ class ApprovalPresenter {
       }
       final decided = outcome;
 
-      // The sheet is already closed here, so navigating can't leave it behind
       switch (decided.status) {
         case PaymentStatus.approved:
           _context?.goNamed(Routes.payments.name);
           _showSnackBar((l10n) => l10n.paymentApprovedSnack(decided.reference));
         case PaymentStatus.rejected:
-          // Rejecting keeps the user where they were
           _showSnackBar(
             (l10n) => l10n.paymentRejectedSnack(decided.reference),
             action: (l10n) => SnackBarAction(
@@ -100,7 +92,6 @@ class ApprovalPresenter {
     }
   }
 
-  /// Returns the decided payment, or null when the sheet closed without a decision
   Future<Payment?> _showSheet(PaymentRequest request, ApprovalBloc bloc) {
     final context = _context;
     if (context == null) return Future.value();
@@ -110,8 +101,7 @@ class ApprovalPresenter {
       useRootNavigator: true,
       isScrollControlled: true,
       useSafeArea: true,
-      // Dragging would close the sheet mid-decision because it skips PopScope. It closes with its
-      // button, a tap outside or back instead
+      // Dragging closes the sheet without asking PopScope, even mid-decision
       enableDrag: false,
       showDragHandle: false,
       builder: (_) => BlocProvider.value(
@@ -121,9 +111,7 @@ class ApprovalPresenter {
     );
   }
 
-  /// The sheet can disappear mid-decision, for example when the browser's back button removes the
-  /// page under it. The decision still finishes, so wait for it instead of reporting the request as
-  /// pending
+  /// The sheet can vanish mid-decision (browser back), but the decision still finishes
   Future<Payment?> _outcomeOfDecisionInFlight(ApprovalBloc bloc) async {
     bool inFlight(ApprovalState state) =>
         state is ApprovalAuthenticating || state is ApprovalSubmitting;
@@ -136,7 +124,6 @@ class ApprovalPresenter {
   }
 
   void _onClosedWithoutDecision(PaymentRequest request) {
-    // Nothing to come back to if the server no longer has the request
     if (!_repository.isPending(request.id)) return;
 
     _showSnackBar(
@@ -159,8 +146,7 @@ class ApprovalPresenter {
         SnackBar(
           content: Text(message(l10n)),
           action: action?.call(l10n),
-          // Every action is also on Home or Payments, so the snackbar times out. Screen reader
-          // users get time to reach it
+          // Stays for screen reader users, who need time to reach the action
           persist: MediaQuery.accessibleNavigationOf(context),
         ),
       );

@@ -21,7 +21,7 @@ class PaymentDetailsPage extends StatelessWidget {
 
   final String paymentId;
 
-  /// A link opened directly on the web has nothing to go back to
+  /// A link opened directly has nothing to go back to
   void _goBack(BuildContext context) {
     if (context.canPop()) {
       context.pop();
@@ -39,7 +39,7 @@ class PaymentDetailsPage extends StatelessWidget {
         leading: BackButton(onPressed: () => _goBack(context)),
         title: Text(l10n.paymentDetailsTitle),
       ),
-      // Keeps the content clear of a notch in landscape
+      // Clears the notch in landscape
       body: SafeArea(
         top: false,
         bottom: false,
@@ -49,8 +49,7 @@ class PaymentDetailsPage extends StatelessWidget {
               child: CircularProgressIndicator(),
             ),
             PaymentsError() => const PaymentsErrorView(),
-            // Only decided payments resolve. A pending request isn't a payment yet, so it shows as
-            // unavailable
+            // A pending request isn't a payment yet, so it shows as unavailable
             PaymentsLoaded(:final snapshot) => switch (snapshot.paymentById(paymentId)) {
               final payment? => _PaymentDetails(payment: payment),
               null => MessageView(
@@ -88,8 +87,7 @@ class _PaymentDetails extends StatelessWidget {
     final note = payment.note;
 
     return ListView(
-      // Leaves room for the debug button. This screen has no navigation bar, so it counts from the
-      // safe area
+      // Leaves room for the debug button, measured from the safe area
       padding: EdgeInsets.fromLTRB(16, 16, 16, 168 + MediaQuery.paddingOf(context).bottom),
       children: [
         Center(child: RecipientAvatar(name: payment.recipientName, size: 64)),
@@ -102,7 +100,7 @@ class _PaymentDetails extends StatelessWidget {
         const SizedBox(height: 8),
         Center(child: StatusBadge(status: payment.status)),
         const SizedBox(height: 20),
-        // Large text shrinks the amount rather than breaking it across lines
+        // Shrinks with large text instead of wrapping mid-number
         FittedBox(
           fit: BoxFit.scaleDown,
           child: Text(
@@ -160,7 +158,7 @@ class _DetailRow extends StatelessWidget {
       // The icon button's own padding lines its icon up with the values
       padding: EdgeInsetsDirectional.fromSTEB(16, 4, trailing == null ? 16 : 0, 4),
       child: ConstrainedBox(
-        // As tall as an icon button, so rows with and without one match
+        // As tall as an icon button, so all rows match
         constraints: const BoxConstraints(minHeight: 48),
         child: Align(
           alignment: AlignmentDirectional.centerStart,

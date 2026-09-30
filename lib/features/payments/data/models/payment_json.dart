@@ -2,8 +2,7 @@ import 'package:payment_approval/features/payments/domain/models/money.dart';
 import 'package:payment_approval/features/payments/domain/models/payment.dart';
 import 'package:payment_approval/features/payments/domain/models/payment_request.dart';
 
-/// Strict mapping from the server's JSON to domain models. Anything missing or malformed throws a
-/// [FormatException] naming the field, so bad money data is never shown or summed
+/// Strict: anything missing or malformed throws a [FormatException] naming the field
 Payment paymentFromJson(Map<String, Object?> json) {
   return Payment(
     id: _requiredString(json, 'id'),
@@ -48,8 +47,7 @@ String? _optionalString(Map<String, Object?> json, String key) {
   return trimmed.isEmpty ? null : trimmed;
 }
 
-/// Amounts are integer minor units. Anything else breaks the contract, and guessing could show the
-/// wrong amount
+/// Rejects anything but integer minor units rather than guess an amount
 Money _money(Map<String, Object?> json, String key) {
   final value = json[key];
   if (value is! Map<String, Object?>) {
@@ -79,7 +77,7 @@ PaymentStatus _status(Map<String, Object?> json, String key) => switch (json[key
   final value => throw FormatException('Expected "approved" or "rejected" for "$key"', value),
 };
 
-/// Timestamps need a zone ("Z" or an offset) because a bare local time is ambiguous
+/// A timestamp without a zone is ambiguous, so it's rejected
 DateTime _instant(Map<String, Object?> json, String key) {
   final value = _requiredString(json, key);
   final parsed = DateTime.tryParse(value);

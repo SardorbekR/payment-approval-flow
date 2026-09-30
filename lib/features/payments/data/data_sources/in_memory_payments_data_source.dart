@@ -6,11 +6,7 @@ import 'package:payment_approval/features/payments/data/data_sources/recipient_m
 
 part 'in_memory_payments_seed.dart';
 
-/// Fake payments backend that keeps its state in memory
-///
-/// Like a real server, it holds the full payment and decides what each response may contain.
-/// Pending requests go out with a masked name and no amount. The full payment comes back only after
-/// a decision. [latency] makes loading states visible in the demo
+/// Stands in for the backend. Pending requests go out masked, with no amount
 class InMemoryPaymentsDataSource implements PaymentsDataSource {
   InMemoryPaymentsDataSource({Random? random, Duration latency = Duration.zero})
     : _random = random ?? Random(),
@@ -76,7 +72,7 @@ class InMemoryPaymentsDataSource implements PaymentsDataSource {
     final record = _records[requestId];
     if (record == null) throw RequestUnavailableException(requestId);
     if (record.isDecided) {
-      // Repeating the recorded decision gets the same answer. Anything else is a conflict
+      // A retry of the same decision gets the same answer
       if (record.status == status) return record.toPaymentJson();
       throw RequestUnavailableException(requestId);
     }
@@ -106,7 +102,6 @@ class InMemoryPaymentsDataSource implements PaymentsDataSource {
     }
   }
 
-  /// Mostly everyday amounts with the occasional large invoice, usually in whole dirhams
   int _randomAmount() {
     final dirhams = switch (_random.nextInt(10)) {
       < 5 => 20 + _random.nextInt(480),
@@ -122,8 +117,7 @@ class InMemoryPaymentsDataSource implements PaymentsDataSource {
     return dirhams * 100 + fils;
   }
 
-  // One hex digit at a time, because Random.nextInt is capped at 2^32 and bitwise operations are
-  // 32-bit on the web
+  // One digit at a time, since the web can't draw large random numbers
   String _randomHex(int length) =>
       List.generate(length, (_) => _random.nextInt(16).toRadixString(16)).join();
 
@@ -132,8 +126,6 @@ class InMemoryPaymentsDataSource implements PaymentsDataSource {
 
 enum _RecordStatus { pending, approved, rejected }
 
-/// The server's own view of a payment, including the fields a device only receives after the user
-/// decides
 class _PaymentRecord {
   const _PaymentRecord({
     required this.id,
@@ -185,7 +177,7 @@ class _PaymentRecord {
     };
   }
 
-  /// All a device may see before the user authenticates: a masked name and no amount
+  /// All a device may see before the user authenticates
   Map<String, Object?> toRequestJson() => {
     'id': id,
     'reference': reference,

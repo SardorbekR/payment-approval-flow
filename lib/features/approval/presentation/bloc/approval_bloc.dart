@@ -10,8 +10,6 @@ import 'package:payment_approval/features/payments/domain/repositories/payments_
 part 'approval_event.dart';
 part 'approval_state.dart';
 
-/// Drives one approval sheet. The decision is sent only after device authentication succeeds, and
-/// every retry authenticates again
 class ApprovalBloc extends Bloc<ApprovalEvent, ApprovalState> {
   ApprovalBloc({
     required PaymentRequest request,
@@ -21,7 +19,7 @@ class ApprovalBloc extends Bloc<ApprovalEvent, ApprovalState> {
        _repository = repository,
        _authenticator = authenticator,
        super(const ApprovalInitial()) {
-    // Drops taps while a decision is in progress, so a request is never submitted twice
+    // Ignores taps while a decision is running, so it's never sent twice
     on<SubmitDecision>(_submitDecision, transformer: droppable());
   }
 
@@ -33,8 +31,7 @@ class ApprovalBloc extends Bloc<ApprovalEvent, ApprovalState> {
     final decision = event.decision;
     emit(ApprovalAuthenticating(decision));
 
-    // The sheet can't be closed while busy, so every failure below must end in a state the user can
-    // leave. Errors still go to addError
+    // The sheet can't close while busy, so every failure must end in a state the user can leave
     final DeviceAuthResult authResult;
     try {
       authResult = await _authenticator.authenticate(reason: event.authReason);

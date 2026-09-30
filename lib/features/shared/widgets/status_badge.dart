@@ -3,7 +3,7 @@ import 'package:payment_approval/core/theme/app_colors.dart';
 import 'package:payment_approval/features/payments/domain/models/payment.dart';
 import 'package:payment_approval/l10n/app_localizations.dart';
 
-/// A small pill with an icon and a label, so the status never relies on color alone
+/// Icon and label too, so status never relies on color alone
 class StatusBadge extends StatelessWidget {
   const StatusBadge({required this.status, super.key});
 
